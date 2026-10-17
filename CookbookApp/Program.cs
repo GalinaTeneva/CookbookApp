@@ -16,8 +16,17 @@ namespace CookbookApp
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            //TODO:Add options
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+            {
+                options.User.RequireUniqueEmail = true;
+
+                options.Password.RequireLowercase = false;
+                options.Password.RequireUppercase = false;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequiredLength = 4;
+
+                options.SignIn.RequireConfirmedAccount = false;
+            })
                 .AddEntityFrameworkStores<CookbookDbContext>();
             builder.Services.AddControllersWithViews();
 
@@ -25,7 +34,7 @@ namespace CookbookApp
 
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
-            {                
+            {
                 app.UseDeveloperExceptionPage();    //Only for Dev env
                 app.UseMigrationsEndPoint();
             }
@@ -41,6 +50,7 @@ namespace CookbookApp
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
