@@ -1,4 +1,4 @@
-﻿namespace CookbookApp.Common
+﻿namespace Cookbook.Common
 {
     public static class EntityValidation
     {

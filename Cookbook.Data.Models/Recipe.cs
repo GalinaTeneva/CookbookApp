@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static CookbookApp.Common.EntityValidation.RecipeEntityValidation;
+using static Cookbook.Common.EntityValidation.RecipeEntityValidation;
 
-namespace CookbookApp.Data.Models
+namespace Cookbook.Data.Models
 {
     public class Recipe
     {

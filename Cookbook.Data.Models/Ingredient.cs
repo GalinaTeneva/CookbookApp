@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-using static CookbookApp.Common.EntityValidation.IngredientEntityValidation;
+using static Cookbook.Common.EntityValidation.IngredientEntityValidation;
 
-namespace CookbookApp.Data.Models
+namespace Cookbook.Data.Models
 {
     public class Ingredient
     {

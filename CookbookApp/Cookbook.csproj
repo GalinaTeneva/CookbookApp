@@ -16,4 +16,9 @@
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Cookbook.Data\Cookbook.Data.csproj" />
+    <ProjectReference Include="..\Cookbook.Web.ViewModels\Cookbook.Web.ViewModels.csproj" />
+  </ItemGroup>
+
 </Project>

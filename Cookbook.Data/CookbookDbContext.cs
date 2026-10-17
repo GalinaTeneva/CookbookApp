@@ -1,8 +1,8 @@
-﻿using CookbookApp.Data.Models;
+﻿using Cookbook.Data.Models;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace CookbookApp.Data
+namespace Cookbook.Data
 {
     public class CookbookDbContext : IdentityDbContext
     {

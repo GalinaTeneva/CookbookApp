@@ -1,8 +1,8 @@
-using CookbookApp.Data;
+using Cookbook.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace CookbookApp
+namespace Cookbook
 {
     public class Program
     {

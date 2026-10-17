@@ -1,4 +1,4 @@
-namespace CookbookApp.Models
+namespace Cookbook.Web.ViewModels
 {
     public class ErrorViewModel
     {

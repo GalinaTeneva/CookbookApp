@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-using static CookbookApp.Common.EntityValidation.CategoryEntityValidation;
+using static Cookbook.Common.EntityValidation.CategoryEntityValidation;
 
-namespace CookbookApp.Data.Models
+namespace Cookbook.Data.Models
 {
     public class Category
     {

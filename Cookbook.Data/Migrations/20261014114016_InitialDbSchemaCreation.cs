@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace CookbookApp.Data.Migrations
+namespace Cookbook.Data.Migrations
 {
     /// <inheritdoc />
     public partial class InitialDbSchemaCreation : Migration
