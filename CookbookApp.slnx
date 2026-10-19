@@ -1,7 +1,15 @@
 <Solution>
+  <Folder Name="/Data/">
+    <Project Path="Cookbook.Data.Models/Cookbook.Data.Models.csproj" Id="ef68e658-c360-4b06-b009-df7be332b2f7" />
+    <Project Path="Cookbook.Data/Cookbook.Data.csproj" Id="6ad5f0f1-d9bf-4eb9-94be-778bf44a4039" />
+  </Folder>
+  <Folder Name="/Services/">
+    <Project Path="Cookbook.Services.Core/Cookbook.Services.Core.csproj" Id="defd144b-babd-40e2-ad21-efe57270cb42" />
+    <Project Path="Cookbook.Services.Data/Cookbook.Services.Data.csproj" Id="2bc2c62e-965a-4578-bb53-4e6c24d4d180" />
+  </Folder>
+  <Folder Name="/Web/">
+    <Project Path="Cookbook.Web.ViewModels/Cookbook.Web.ViewModels.csproj" Id="079c252a-7805-4270-b491-09e41ba06b9d" />
+    <Project Path="CookbookApp/Cookbook.csproj" />
+  </Folder>
   <Project Path="Cookbook.Common/Cookbook.Common.csproj" Id="d01e22c4-997c-4182-98b4-e2a1d22a0091" />
-  <Project Path="Cookbook.Data.Models/Cookbook.Data.Models.csproj" Id="ef68e658-c360-4b06-b009-df7be332b2f7" />
-  <Project Path="Cookbook.Data/Cookbook.Data.csproj" Id="6ad5f0f1-d9bf-4eb9-94be-778bf44a4039" />
-  <Project Path="Cookbook.Web.ViewModels/Cookbook.Web.ViewModels.csproj" Id="079c252a-7805-4270-b491-09e41ba06b9d" />
-  <Project Path="CookbookApp/Cookbook.csproj" />
 </Solution>
