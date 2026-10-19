@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cookbook.Data\Cookbook.Data.csproj" />
+    <ProjectReference Include="..\Cookbook.Services.Core\Cookbook.Services.Core.csproj" />
+    <ProjectReference Include="..\Cookbook.Services.Data\Cookbook.Services.Data.csproj" />
     <ProjectReference Include="..\Cookbook.Web.ViewModels\Cookbook.Web.ViewModels.csproj" />
   </ItemGroup>
 

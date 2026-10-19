@@ -3,7 +3,6 @@ using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Identity.Client;
 
 namespace Cookbook.Services.Core
 {

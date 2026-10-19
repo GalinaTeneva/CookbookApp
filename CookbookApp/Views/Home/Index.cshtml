@@ -2,7 +2,142 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<section class="bg-light rounded-3 px-4 py-5 p-md-5 my-4"
+         aria-labelledby="home-title">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-xl-8 text-center">
+            <p class="text-success fw-bold text-uppercase small mb-3">
+                Your everyday kitchen companion
+            </p>
+
+            <h1 id="home-title" class="display-4 fw-bold mb-4">
+                Good food. Great memories.
+                <span class="d-block text-success">Your cookbook.</span>
+            </h1>
+
+            <p class="lead text-muted mb-4">
+                A home for family favourites, weeknight staples, and
+                delicious discoveries. Keep the recipes you love
+                together and make every meal worth remembering.
+            </p>
+
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a asp-area="Identity"
+                   asp-page="/Account/Register"
+                   class="btn btn-success btn-lg px-4">
+                    Create Your Cookbook
+                </a>
+
+                <a asp-area="Identity"
+                   asp-page="/Account/Login"
+                   class="btn btn-outline-success btn-lg px-4">
+                    Sign In
+                </a>
+            </div>
+
+            <div class="border-top mt-5 pt-4">
+                <p class="small text-muted mb-0">
+                    Collected with care. Cooked with love.
+                    Enjoyed together.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="py-5" aria-labelledby="features-title">
+    <div class="text-center mb-5">
+        <p class="text-success fw-bold text-uppercase small">
+            Made for your kitchen
+        </p>
+
+        <h2 id="features-title" class="fw-bold">
+            A place for every favourite
+        </h2>
+
+        <p class="text-muted mb-0">
+            Your personal collection, ready whenever inspiration strikes.
+        </p>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        <div class="col">
+            <div class="card h-100 border-0 bg-light">
+                <div class="card-body p-4">
+                    <span class="text-success fs-3 fw-bold">01</span>
+
+                    <h3 class="h4 mt-3">Keep it together</h3>
+
+                    <p class="text-muted mb-0">
+                        Give your favourite recipes a home instead of
+                        losing them in bookmarks and handwritten notes.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 border-0 bg-light">
+                <div class="card-body p-4">
+                    <span class="text-success fs-3 fw-bold">02</span>
+
+                    <h3 class="h4 mt-3">Find a familiar favourite</h3>
+
+                    <p class="text-muted mb-0">
+                        Browse your collection for a comforting classic
+                        or the perfect dish for tonight.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col">
+            <div class="card h-100 border-0 bg-light">
+                <div class="card-body p-4">
+                    <span class="text-success fs-3 fw-bold">03</span>
+
+                    <h3 class="h4 mt-3">Build your traditions</h3>
+
+                    <p class="text-muted mb-0">
+                        Make room for family recipes, happy experiments,
+                        and meals you will cook again and again.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="bg-success text-white rounded-3 p-4 p-md-5 mb-5"
+         aria-labelledby="invitation-title">
+    <div class="row align-items-center g-4">
+        <div class="col-lg-8">
+            <h2 id="invitation-title" class="fw-bold">
+                Your next favourite meal starts here.
+            </h2>
+
+            <p class="mb-0">
+                A few good recipes are the beginning of something delicious.
+            </p>
+        </div>
+
+        @*@<div class="col-lg-4">
+            <div class="d-grid d-lg-flex justify-content-lg-end">
+                @if (isSignedIn)
+                {
+                    <a asp-controller="Recipe"
+                       asp-action="MyRecipes"
+                       class="btn btn-light btn-lg text-success">
+                        Explore My Recipes
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity"
+                       asp-page="/Account/Register"
+                       class="btn btn-light btn-lg text-success">
+                        Get Started
+                    </a>
+                }
+            </div>
+        </div>*@
+    </div>
+</section>
