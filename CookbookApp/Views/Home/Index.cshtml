@@ -1,5 +1,6 @@
 ﻿@{
     ViewData["Title"] = "Home";
+    bool isSignedIn = User.Identity?.IsAuthenticated == true;
 }
 
 <section class="bg-light rounded-3 px-4 py-5 p-md-5 my-4"
@@ -22,17 +23,29 @@
             </p>
 
             <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
-                <a asp-area="Identity"
-                   asp-page="/Account/Register"
-                   class="btn btn-success btn-lg px-4">
-                    Create Your Cookbook
-                </a>
+                @if(isSignedIn)
+                {
+                    <a asp-controller="Recipes"
+                       asp-action="MyRecipes"
+                       class="btn btn-success btn-lg">
+                        Open My Cookbook
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity"
+                       asp-page="/Account/Register"
+                       class="btn btn-success btn-lg px-4">
+                        Create Your Cookbook
+                    </a>
 
-                <a asp-area="Identity"
-                   asp-page="/Account/Login"
-                   class="btn btn-outline-success btn-lg px-4">
-                    Sign In
-                </a>
+                    <a asp-area="Identity"
+                       asp-page="/Account/Login"
+                       class="btn btn-outline-success btn-lg px-4">
+                        Sign In
+                    </a>
+                }
+
             </div>
 
             <div class="border-top mt-5 pt-4">

@@ -1,4 +1,6 @@
 using Cookbook.Data;
+using Cookbook.Services.Core;
+using Cookbook.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -28,6 +30,9 @@ namespace Cookbook
                 options.SignIn.RequireConfirmedAccount = false;
             })
                 .AddEntityFrameworkStores<CookbookDbContext>();
+
+            builder.Services.AddScoped<IRecipeService, RecipeService>();
+
             builder.Services.AddControllersWithViews();
 
             var app = builder.Build();
@@ -35,7 +40,7 @@ namespace Cookbook
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();    //Only for Dev env
+                app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
             }
             else

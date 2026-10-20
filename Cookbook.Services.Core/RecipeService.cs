@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cookbook.Services.Core
 {
-    internal class RecipeService : IRecipeService
+    public class RecipeService : IRecipeService
     {
         private readonly CookbookDbContext dbContext;
 
