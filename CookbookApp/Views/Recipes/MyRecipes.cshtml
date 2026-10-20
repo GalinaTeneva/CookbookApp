@@ -1,0 +1,147 @@
+﻿@{
+    ViewData["Title"] = "My Recipes";
+    var recipes = new List<MyRecipesViewModel>();
+    @*{
+        new MyRecipesViewModel
+        {
+            Id = 12,
+            Title = "Broccoli Chicken Mac and Cheese",
+            CreatedOn = "26 October 2025",
+            CategoryName = "Dinner"
+        },
+        new MyRecipesViewModel
+        {
+            Id = 20,
+            Title = "Next Recipe",
+            CreatedOn = "2 May 2026",
+            CategoryName = "Breakfast"
+        }
+    };*@
+}
+
+<section class="py-4" aria-labelledby="recipes-title">
+    <header class="bg-light rounded-3 p-4 p-md-5 mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-md-8">
+                <p class="text-success fw-bold text-uppercase small mb-2">
+                    Your personal cookbook
+                </p>
+
+                <div class="d-flex align-items-center flex-wrap gap-3">
+                    <h1 id="recipes-title" class="display-5 fw-bold mb-0">
+                        My Recipes
+                    </h1>
+
+                    <span class="badge rounded-pill bg-success">
+                        @recipes.Count
+                        @(recipes.Count == 1 ? "recipe" : "recipes")
+                    </span>
+                </div>
+
+                <p class="text-muted mt-3 mb-0">
+                    The dishes you love, all in one place.
+                </p>
+            </div>
+
+            <div class="col-md-4">
+                <div class="d-grid d-md-flex justify-content-md-end">
+                    <a asp-controller="Recipe"
+                       asp-action="Create"
+                       class="btn btn-success btn-lg">
+                        Add Recipe
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    @if (recipes.Count == 0)
+    {
+        <div class="border rounded-3 text-center p-4 p-md-5">
+            <p class="text-success fw-bold text-uppercase small mb-3">
+                The first page is yours
+            </p>
+
+            <h2 class="h1 mb-3">
+                Your cookbook starts here.
+            </h2>
+
+            <p class="text-muted mb-4">
+                Add a family favourite, a weeknight staple,
+                or something you have been meaning to try.
+            </p>
+
+            <a asp-controller="Recipe"
+               asp-action="Create"
+               class="btn btn-success btn-lg">
+                Add Your First Recipe
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            @foreach (var recipe in recipes)
+            {
+                <div class="col">
+                    <article class="card h-100 shadow-sm">
+                        <div class="ratio ratio-4x3 bg-light rounded-top overflow-hidden">
+                            @if (!string.IsNullOrWhiteSpace(recipe.ImageUrl))
+                            {
+                                <img src="@recipe.ImageUrl"
+                                     alt="@recipe.Title"
+                                     class="w-100 h-100"
+                                     loading="lazy"
+                                     decoding="async"
+                                     onerror="this.hidden = true; this.nextElementSibling.classList.remove('d-none');" />
+
+                                <div class="d-none d-flex align-items-center justify-content-center text-success">
+                                    <span class="fs-5 fw-semibold">
+                                        From your kitchen
+                                    </span>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="d-flex align-items-center justify-content-center text-success">
+                                    <span class="fs-5 fw-semibold">
+                                        From your kitchen
+                                    </span>
+                                </div>
+                            }
+                        </div>
+
+                        <div class="card-body d-flex flex-column p-4">
+                            <div class="mb-3">
+                                <span class="badge rounded-pill bg-light text-success border">
+                                    @recipe.CategoryName
+                                </span>
+                            </div>
+
+                            <h2 class="card-title h4 text-break mb-3">
+                                @recipe.Title
+                            </h2>
+
+                            <p class="card-text small text-muted mb-4">
+                                Added on
+                                <time datetime="@recipe.CreatedOn">
+                                    @recipe.CreatedOn
+                                </time>
+                            </p>
+
+                            <div class="mt-auto">
+                                <a asp-controller="Recipe"
+                                   asp-action="Details"
+                                   asp-route-id="@recipe.Id"
+                                   class="btn btn-outline-success w-100"
+                                   aria-label="@($"View recipe: {recipe.Title}")">
+                                    View Recipe
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            }
+        </div>
+    }
+</section>
