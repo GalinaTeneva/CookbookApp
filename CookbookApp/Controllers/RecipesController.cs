@@ -1,6 +1,8 @@
 ﻿using Cookbook.Services.Core.Contracts;
+using Cookbook.Services.Data.Genre;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
+using Cookbook.Web.ViewModels.Genre;
 using Cookbook.Web.ViewModels.Recipe;
 using Microsoft.AspNetCore.Mvc;
 
@@ -9,16 +11,18 @@ namespace Cookbook.Controllers
     public class RecipesController : BaseController
     {
         private readonly IRecipeService recipeService;
+        private readonly ICategoryService categoryService;
 
-        public RecipesController(IRecipeService recipeService)
+        public RecipesController(IRecipeService recipeService, ICategoryService categoryService)
         {
             this.recipeService = recipeService;
+            this.categoryService = categoryService;
         }
 
         public async Task<IActionResult> MyRecipes()
         {
             string? userId = GetUserId();
-            if(userId == null)
+            if (userId == null)
             {
                 return Unauthorized();
             }
@@ -47,10 +51,42 @@ namespace Cookbook.Controllers
 
                 return View(userRecipesVieModel);
             }
-            catch(ArgumentException ae)
+            catch (ArgumentException ae)
             {
                 return BadRequest(ae.Message);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Add()
+        {
+            AddRecipeInputModel addRecipeInputModel = new AddRecipeInputModel()
+            {
+                Categories = await GetAllCategoriesViewModelAsync()
+            };
+
+            return View(addRecipeInputModel);
+        }
+
+        //TODO: Implement the method + validate the model
+        public async Task<IActionResult> Add(AddRecipeInputModel inputModel)
+        {
+            return View();
+        }
+
+        private async Task<IEnumerable<AllCategoriesViewModel>> GetAllCategoriesViewModelAsync()
+        {
+            IEnumerable<GetAllCategoriesResponseData> allCategories = await categoryService.GetAllCategoriesAsync();
+
+            IEnumerable<AllCategoriesViewModel> allCategoriesViewModels = allCategories
+                .Select(c => new AllCategoriesViewModel()
+                {
+                    Id = c.Id,
+                    Name = c.Name
+                })
+                .ToArray();
+
+            return allCategoriesViewModels;
         }
     }
 }

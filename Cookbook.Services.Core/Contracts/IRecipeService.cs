@@ -6,5 +6,7 @@ namespace Cookbook.Services.Core.Contracts
     public interface IRecipeService
     {
         Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData);
+
+        Task<bool> AddRecipeToUserRecipeList(AddRecipeToUserRecipeListRequestData requestData);
     }
 }

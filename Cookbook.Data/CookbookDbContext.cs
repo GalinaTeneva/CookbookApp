@@ -46,6 +46,8 @@ namespace Cookbook.Data
                 .WithMany(r => r.RecipeIngredients)
                 .HasForeignKey(ri => ri.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(CookbookDbContext).Assembly);
         }
     }
 }

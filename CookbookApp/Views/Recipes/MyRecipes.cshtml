@@ -2,23 +2,6 @@
 
 @{
     ViewData["Title"] = "My Recipes";
-    @*var recipes = new List<MyRecipesViewModel>();
-    {
-        new MyRecipesViewModel
-        {
-            Id = 12,
-            Title = "Broccoli Chicken Mac and Cheese",
-            CreatedOn = "26 October 2025",
-            CategoryName = "Dinner"
-        },
-        new MyRecipesViewModel
-        {
-            Id = 20,
-            Title = "Next Recipe",
-            CreatedOn = "2 May 2026",
-            CategoryName = "Breakfast"
-        }
-    };*@
 }
 
 <section class="py-4" aria-labelledby="recipes-title">
@@ -48,7 +31,7 @@
             <div class="col-md-4">
                 <div class="d-grid d-md-flex justify-content-md-end">
                     <a asp-controller="Recipes"
-                       asp-action="Create"
+                       asp-action="Add"
                        class="btn btn-success btn-lg">
                         Add Recipe
                     </a>
@@ -70,7 +53,7 @@
             </p>
 
             <a asp-controller="Recipes"
-               asp-action="Create"
+               asp-action="Add"
                class="btn btn-success btn-lg">
                 Add Your First Recipe
             </a>

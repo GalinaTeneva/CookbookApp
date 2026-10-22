@@ -32,6 +32,7 @@ namespace Cookbook
                 .AddEntityFrameworkStores<CookbookDbContext>();
 
             builder.Services.AddScoped<IRecipeService, RecipeService>();
+            builder.Services.AddScoped<ICategoryService, CategoryService>();
 
             builder.Services.AddControllersWithViews();
 
