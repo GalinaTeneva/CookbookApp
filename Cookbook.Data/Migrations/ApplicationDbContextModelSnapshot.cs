@@ -88,6 +88,88 @@ namespace Cookbook.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Ingredients");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Flour"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "Baking powder"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "Sugar"
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Name = "Salt"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Name = "Milk"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Name = "Eggs"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Name = "Butter"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Name = "Pasta"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Name = "Olive oil"
+                        },
+                        new
+                        {
+                            Id = 10,
+                            Name = "Garlic"
+                        },
+                        new
+                        {
+                            Id = 11,
+                            Name = "Chopped tomatoes"
+                        },
+                        new
+                        {
+                            Id = 12,
+                            Name = "Black pepper"
+                        },
+                        new
+                        {
+                            Id = 13,
+                            Name = "Fresh basil"
+                        },
+                        new
+                        {
+                            Id = 14,
+                            Name = "Parmesan"
+                        },
+                        new
+                        {
+                            Id = 15,
+                            Name = "Apples"
+                        },
+                        new
+                        {
+                            Id = 16,
+                            Name = "Cinnamon"
+                        });
                 });
 
             modelBuilder.Entity("Cookbook.Data.Models.Recipe", b =>
@@ -138,9 +220,9 @@ namespace Cookbook.Data.Migrations
                         {
                             Id = 1,
                             CategoryId = 1,
-                            CreatedOn = new DateTime(2026, 10, 23, 0, 27, 15, 978, DateTimeKind.Local).AddTicks(8527),
+                            CreatedOn = new DateTime(2026, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Golden, fluffy pancakes for a relaxed weekend breakfast.",
-                            Instructions = "1. Mix 200 g flour, 2 teaspoons baking powder, 1 tablespoon sugar, and a pinch of salt.\n2. Whisk 250 ml milk, 1 egg, and 2 tablespoons melted butter.\n3. Stir the wet ingredients into the dry ingredients until just combined.\n4. Heat a lightly greased frying pan over medium heat.\n5. Add small portions of batter. Cook until bubbles appear, then flip and cook until golden.\n6. Serve warm with fresh fruit or maple syrup.",
+                            Instructions = "* Mix 200 g flour, 2 teaspoons baking powder, 1 tablespoon sugar, and a pinch of salt.\n* Whisk 250 ml milk, 1 egg, and 2 tablespoons melted butter.\n* Stir the wet ingredients into the dry ingredients until just combined.\n* Heat a lightly greased frying pan over medium heat.\n* Add small portions of batter. Cook until bubbles appear, then flip and cook until golden.\n* Serve warm.",
                             Title = "Fluffy Homemade Pancakes",
                             UserId = "4dd95024-058e-44aa-a548-8d28b38a6e41"
                         },
@@ -148,9 +230,9 @@ namespace Cookbook.Data.Migrations
                         {
                             Id = 2,
                             CategoryId = 2,
-                            CreatedOn = new DateTime(2026, 10, 23, 0, 27, 16, 63, DateTimeKind.Local).AddTicks(1556),
+                            CreatedOn = new DateTime(2026, 10, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "A comforting pasta dish with a simple homemade tomato sauce.",
-                            Instructions = "1. Cook 250 g pasta in salted boiling water according to the package instructions.\n2. Heat 2 tablespoons olive oil in a saucepan. Add 2 minced garlic cloves and cook for 30 seconds.\n3. Add 400 g chopped tomatoes and simmer for 15 minutes.\n4. Season with salt and black pepper, then stir in a handful of fresh basil.\n5. Drain the pasta, reserving a little cooking water.\n6. Toss with the sauce, adding cooking water if needed. Serve with grated Parmesan.",
+                            Instructions = "* Cook 250 g pasta in salted boiling water according to the package instructions.\n* Heat 2 tablespoons olive oil in a saucepan. Add 2 minced garlic cloves and cook for 30 seconds.\n* Add 400 g chopped tomatoes and simmer for 15 minutes.\n* Season with salt and black pepper, then stir in a handful of fresh basil.\n* Drain the pasta, reserving a little cooking water.\n* Toss with the sauce, adding cooking water if needed. Serve with grated Parmesan.",
                             Title = "Tomato and Basil Pasta",
                             UserId = "4dd95024-058e-44aa-a548-8d28b38a6e41"
                         },
@@ -158,9 +240,9 @@ namespace Cookbook.Data.Migrations
                         {
                             Id = 3,
                             CategoryId = 4,
-                            CreatedOn = new DateTime(2026, 10, 23, 0, 27, 16, 63, DateTimeKind.Local).AddTicks(1645),
+                            CreatedOn = new DateTime(2026, 10, 16, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Description = "Tender cinnamon apples beneath a crisp, buttery topping.",
-                            Instructions = "1. Preheat the oven to 180 C.\n2. Peel, core, and slice 4 apples. Toss with 2 tablespoons sugar and 1 teaspoon cinnamon.\n3. Transfer the apples to a baking dish.\n4. Rub 100 g cold butter into 150 g flour until the mixture resembles coarse crumbs.\n5. Stir in 75 g sugar and sprinkle over the apples.\n6. Bake for 35 to 40 minutes until golden and the apples are tender.",
+                            Instructions = "* Preheat the oven to 180 C.\n* Peel, core, and slice 4 apples. Toss with 2 tablespoons sugar and 1 teaspoon cinnamon.\n* Transfer the apples to a baking dish.\n* Rub 100 g cold butter into 150 g flour until the mixture resembles coarse crumbs.\n* Stir in 75 g sugar and sprinkle over the apples.\n* Bake for 35 to 40 minutes until golden and the apples are tender.",
                             Title = "Classic Apple Crumble",
                             UserId = "4dd95024-058e-44aa-a548-8d28b38a6e41"
                         });
@@ -176,14 +258,136 @@ namespace Cookbook.Data.Migrations
 
                     b.Property<string>("Quantity")
                         .IsRequired()
-                        .HasMaxLength(30)
-                        .HasColumnType("nvarchar(30)");
+                        .HasMaxLength(70)
+                        .HasColumnType("nvarchar(70)");
 
                     b.HasKey("RecipeId", "IngredientId");
 
                     b.HasIndex("IngredientId");
 
                     b.ToTable("RecipesIngredients");
+
+                    b.HasData(
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 1,
+                            Quantity = "200 g"
+                        },
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 2,
+                            Quantity = "2 teaspoons"
+                        },
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 3,
+                            Quantity = "1 tablespoon"
+                        },
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 4,
+                            Quantity = "A pinch"
+                        },
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 5,
+                            Quantity = "250 ml"
+                        },
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 6,
+                            Quantity = "1"
+                        },
+                        new
+                        {
+                            RecipeId = 1,
+                            IngredientId = 7,
+                            Quantity = "2 tablespoons, melted; extra for greasing"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 8,
+                            Quantity = "250 g"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 9,
+                            Quantity = "2 tablespoons"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 10,
+                            Quantity = "2 cloves"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 11,
+                            Quantity = "400 g"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 4,
+                            Quantity = "To taste"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 12,
+                            Quantity = "To taste"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 13,
+                            Quantity = "1 handful"
+                        },
+                        new
+                        {
+                            RecipeId = 2,
+                            IngredientId = 14,
+                            Quantity = "To serve"
+                        },
+                        new
+                        {
+                            RecipeId = 3,
+                            IngredientId = 15,
+                            Quantity = "4"
+                        },
+                        new
+                        {
+                            RecipeId = 3,
+                            IngredientId = 3,
+                            Quantity = "2 tablespoons for filling; 75 g for topping"
+                        },
+                        new
+                        {
+                            RecipeId = 3,
+                            IngredientId = 16,
+                            Quantity = "1 teaspoon"
+                        },
+                        new
+                        {
+                            RecipeId = 3,
+                            IngredientId = 7,
+                            Quantity = "100 g, cold"
+                        },
+                        new
+                        {
+                            RecipeId = 3,
+                            IngredientId = 1,
+                            Quantity = "150 g"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -307,15 +511,15 @@ namespace Cookbook.Data.Migrations
                         {
                             Id = "4dd95024-058e-44aa-a548-8d28b38a6e41",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "9a587e6f-3a24-4c68-9d2c-a77ed0f8b313",
+                            ConcurrencyStamp = "e0b0d1db-8486-407e-8d0d-d34ee91266da",
                             Email = "test@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST@GMAIL.COM",
                             NormalizedUserName = "TEST@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEKClPdcowQNkibCFbrUMFCJFxvQYH5t6GxPq75hAOb4+HAX2dxmFerF/GwAH0LwDpg==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEH0v2iVcCj45ycokDBky/wFA+fiumWbdazvE+WtpKR+hDV5btJE8zDsjVCnQmI+PaA==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "57b5e447-44e7-41b0-ab08-e8104752939f",
+                            SecurityStamp = "4aae1f3e-1357-4c90-ab2b-70d0fa5cfec3",
                             TwoFactorEnabled = false,
                             UserName = "test@gmail.com"
                         });

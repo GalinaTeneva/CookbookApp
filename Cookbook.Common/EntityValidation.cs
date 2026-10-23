@@ -34,7 +34,7 @@
 
             //Quantity
             public const int IngredientQuantityMinLength = 2;
-            public const int IngredientQuantityMaxLength = 30;
+            public const int IngredientQuantityMaxLength = 70;
         }
     }
 }
