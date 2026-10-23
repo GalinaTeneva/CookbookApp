@@ -33,6 +33,7 @@ namespace Cookbook
 
             builder.Services.AddScoped<IRecipeService, RecipeService>();
             builder.Services.AddScoped<ICategoryService, CategoryService>();
+            builder.Services.AddScoped<IIngredientService, IngredientService>();
 
             builder.Services.AddControllersWithViews();
 

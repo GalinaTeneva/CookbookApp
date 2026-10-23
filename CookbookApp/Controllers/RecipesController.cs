@@ -2,6 +2,7 @@
 using Cookbook.Services.Data.Genre;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
+using Cookbook.Services.Data.RecipeIngredient;
 using Cookbook.Web.ViewModels.Genre;
 using Cookbook.Web.ViewModels.Recipe;
 using Microsoft.AspNetCore.Mvc;
@@ -68,10 +69,14 @@ namespace Cookbook.Controllers
             return View(addRecipeInputModel);
         }
 
-        //TODO: Add logic for saving the Ingredients in the DB
         [HttpPost]
         public async Task<IActionResult> Add(AddRecipeInputModel inputModel)
         {
+            string? userId = GetUserId();
+
+            if (userId == null)
+                return Unauthorized();
+
             if (!ModelState.IsValid)
             {
                 inputModel.Categories = await GetAllCategoriesViewModelAsync();
@@ -83,16 +88,17 @@ namespace Cookbook.Controllers
             {
                 return BadRequest("There was an error with your request!");
             }
-
+            
             AddRecipeToUserRecipeListRequestData addRecipeToUserRecipeList = new AddRecipeToUserRecipeListRequestData()
             {
                 Title = inputModel.Title,
                 Description = inputModel.Description,
                 Instructions = inputModel.Instructions,
+                RecipeIngredients = MapIngredientsTextToDTO(inputModel.IngredientsText),
                 ImageUrl = inputModel.ImageUrl,
                 CreatedOn = DateTime.Now,
                 CategoryId = inputModel.CategoryId,
-                UserId = GetUserId()!
+                UserId = userId
             };
 
             bool isRecipeCreated = await recipeService.AddRecipeToUserRecipeListAsync(addRecipeToUserRecipeList);
@@ -120,6 +126,34 @@ namespace Cookbook.Controllers
                 .ToArray();
 
             return allCategoriesViewModels;
+        }
+
+        private static List<RecipeIngredientRequestData> MapIngredientsTextToDTO(string ingredientsText)
+        {
+            string[] lines = ingredientsText
+                .Replace("\r\n", "\n")
+                .Replace('\r', '\n')
+                .Split('\n');
+
+            var ingredients = new List<RecipeIngredientRequestData>();
+
+            for (int i = 0; i < lines.Length; i++)
+            {
+                if (string.IsNullOrWhiteSpace(lines[i]))
+                {
+                    continue;
+                }
+
+                string[] parts = lines[i].Split('|', StringSplitOptions.TrimEntries);
+
+                ingredients.Add(new RecipeIngredientRequestData
+                {
+                    Quantity = parts[0],
+                    IngredientName = parts[1]
+                });
+            }
+
+            return ingredients;
         }
     }
 }
