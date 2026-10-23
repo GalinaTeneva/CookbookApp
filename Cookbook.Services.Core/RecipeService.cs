@@ -103,5 +103,32 @@ namespace Cookbook.Services.Core
             return responseData;
         }
 
+        public async Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(int recipeId)
+        {
+            return await dbContext.Recipes
+                .Where(r => r.Id == recipeId)
+                .Select(r => new GetRecipeDetailsResponseData()
+                {
+                    Id = r.Id,
+                    Title = r.Title,
+                    Description = r.Description,
+                    InstructionSteps = r.Instructions.Split(new[] { '*' },StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+                    ImageUrl = r.ImageUrl,
+                    CreatedOn = r.CreatedOn,
+                    CategoryId = r.Category.Id,
+                    CategoryName = r.Category.Name,
+                    UserId = r.UserId,
+                    CreatedBy = r.CreatedBy.UserName ?? "Unknown cook",
+                    RecipeIngredients = r.RecipeIngredients
+                    .OrderBy(ri => ri.Ingredient.Name)
+                    .Select(ri => new RecipeIngredientsResponseData()
+                    {
+                        IngredientName = ri.Ingredient.Name,
+                        Quantity = ri.Quantity
+                    })
+                    .ToList()
+                })
+                .SingleOrDefaultAsync();
+        }
     }
 }

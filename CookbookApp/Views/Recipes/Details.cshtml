@@ -1,0 +1,156 @@
+﻿
+@model DisplayRecipeViewModel
+@{
+    ViewData["Title"] = Model.Title;
+
+    var ingredients = Model.RecipeIngredients.ToArray();
+    var steps = Model.InstructionSteps.ToArray();
+}
+
+<section class="py-4" aria-labelledby="recipe-title">
+    <header class="bg-light rounded-3 p-4 p-md-5 mb-4">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-9">
+                <p class="text-success fw-bold text-uppercase small mb-2">
+                    From your cookbook
+                </p>
+
+                <span class="badge rounded-pill bg-success mb-3">
+                    @Model.CategoryName
+                </span>
+
+                <h1 id="recipe-title"
+                    class="display-5 fw-bold text-break mb-3">
+                    @Model.Title
+                </h1>
+
+                <div class="d-flex flex-wrap gap-3 text-muted small">
+                    <span class="text-break">
+                        @Model.CreatedBy
+                    </span>
+
+                    <span>
+                        Added on @Model.CreatedOn
+                    </span>
+                </div>
+            </div>
+
+            <div class="col-lg-3">
+                <div class="d-grid d-lg-flex justify-content-lg-end">
+                    <a asp-controller="Recipes"
+                       asp-action="MyRecipes"
+                       class="btn btn-outline-success">
+                        Back to My Recipes
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <section class="card shadow-sm mb-4"
+                     aria-labelledby="recipe-overview-title">
+                @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+                {
+                    <img src="@Model.ImageUrl"
+                         alt="@Model.Title"
+                         class="card-img-top img-fluid"
+                         decoding="async" />
+                }
+                else
+                {
+                    <div class="ratio ratio-4x3 bg-light rounded-top">
+                        <div class="d-flex align-items-center justify-content-center text-success">
+                            <span class="fs-5 fw-semibold">
+                                From your kitchen
+                            </span>
+                        </div>
+                    </div>
+                }
+
+                <div class="card-body p-4">
+                    <h2 id="recipe-overview-title" class="text-success h4 mb-3">
+                        About this recipe
+                    </h2>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.Description))
+                    {
+                        @Model.Description
+                    }
+                    else
+                    {
+                        <p class="text-muted mb-0">
+                            No description has been added yet.
+                            Let the dish tell its own story.
+                        </p>
+                    }
+                </div>
+            </section>
+
+            <section class="card shadow-sm"
+                     aria-labelledby="ingredients-title">
+                <div class="card-body p-4">
+                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+                        <h2 id="ingredients-title" class="text-success h4 mb-0">
+                            What you will need
+                        </h2>
+
+                        <span class="badge rounded-pill bg-light text-success border">
+                            @ingredients.Length
+                            @(ingredients.Length == 1 ? "item" : "items")
+                        </span>
+                    </div>
+
+                    <ul class="list-group list-group-flush">
+                        @foreach (var ingredient in ingredients)
+                        {
+                            <li class="list-group-item px-0 py-3">
+                                <div class="row g-2">
+                                    <div class="col-4 fw-semibold text-success text-break">
+                                        @ingredient.Quantity
+                                    </div>
+
+                                    <div class="col-8 text-break">
+                                        @ingredient.IngredientName
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-lg-8">
+            <section class="card shadow-sm"
+                     aria-labelledby="instructions-title">
+                <div class="card-body p-4 p-md-5">
+                    <h2 id="instructions-title" class="text-success h3 mb-3">
+                        Bring it all together
+                    </h2>
+
+                    <p class="text-muted mb-4">
+                        Gather your ingredients and follow the method below.
+                    </p>
+
+                    <ol class="list-unstyled mb-0">
+                        @for (var index = 0; index < steps.Length; index++)
+                        {
+                            <li class="border rounded-3 p-3 p-md-4 mb-3">
+                                <h3 class="h6 text-success fw-bold mb-3">
+                                    Step @(index + 1)
+                                </h3>
+
+                                <p class="text-break mb-0">
+                                    @steps[index]
+                                </p>
+                            </li>
+                        }
+                    </ol>
+                </div>
+            </section>
+        </div>
+    </div>
+</section>
+

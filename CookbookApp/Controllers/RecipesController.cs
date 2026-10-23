@@ -5,6 +5,7 @@ using Cookbook.Services.Data.Recipe.Response;
 using Cookbook.Services.Data.RecipeIngredient;
 using Cookbook.Web.ViewModels.Genre;
 using Cookbook.Web.ViewModels.Recipe;
+using Cookbook.Web.ViewModels.Ingredient;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Cookbook.Controllers
@@ -111,6 +112,41 @@ namespace Cookbook.Controllers
             }
 
             return RedirectToAction(nameof(MyRecipes));
+        }
+
+        //TODO: Check if the logged in user is the owner of the recipe
+        [HttpGet]
+        public async Task<IActionResult> Details([FromRoute] int id)
+        {
+            if(id <= 0)
+            {
+                return BadRequest("There was an error with your request!");
+            }
+
+            GetRecipeDetailsResponseData? responseData = await recipeService.GetRecipeDetailsAsync(id);
+            if (responseData == null)
+                return NotFound();
+
+            DisplayRecipeViewModel displayRecipeViewModel = new DisplayRecipeViewModel
+            {
+                Id = responseData.Id,
+                Title = responseData.Title,
+                Description = responseData.Description,
+                InstructionSteps = responseData.InstructionSteps,
+                ImageUrl = responseData.ImageUrl,
+                CreatedOn = responseData.CreatedOn.ToString(),
+                CategoryName = responseData.CategoryName,
+                CreatedBy = responseData.CreatedBy,
+                RecipeIngredients = responseData.RecipeIngredients
+                .Select(i => new RecipeIngredientsViewModel()
+                {
+                    IngredientName = i.IngredientName,
+                    Quantity = i.Quantity
+                })
+                .ToArray()
+            };
+
+            return View(displayRecipeViewModel);
         }
 
         private async Task<IEnumerable<AllCategoriesViewModel>> GetAllCategoriesViewModelAsync()
