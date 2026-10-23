@@ -19,7 +19,7 @@ namespace Cookbook.Services.Core
             this.logger = logger;
         }
 
-        public async Task<bool> AddRecipeToUserRecipeList(AddRecipeToUserRecipeListRequestData requestData)
+        public async Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData)
         {
             Recipe newRecipe = new Recipe()
             {

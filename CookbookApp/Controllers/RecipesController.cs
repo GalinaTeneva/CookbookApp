@@ -68,10 +68,43 @@ namespace Cookbook.Controllers
             return View(addRecipeInputModel);
         }
 
-        //TODO: Implement the method + validate the model
+        //TODO: Add logic for saving the Ingredients in the DB
+        [HttpPost]
         public async Task<IActionResult> Add(AddRecipeInputModel inputModel)
         {
-            return View();
+            if (!ModelState.IsValid)
+            {
+                inputModel.Categories = await GetAllCategoriesViewModelAsync();
+                return View(inputModel);
+            }
+
+            bool isCategoryValid = await categoryService.CategoryExistsAsync(inputModel.CategoryId);
+            if(!isCategoryValid)
+            {
+                return BadRequest("There was an error with your request!");
+            }
+
+            AddRecipeToUserRecipeListRequestData addRecipeToUserRecipeList = new AddRecipeToUserRecipeListRequestData()
+            {
+                Title = inputModel.Title,
+                Description = inputModel.Description,
+                Instructions = inputModel.Instructions,
+                ImageUrl = inputModel.ImageUrl,
+                CreatedOn = DateTime.Now,
+                CategoryId = inputModel.CategoryId,
+                UserId = GetUserId()!
+            };
+
+            bool isRecipeCreated = await recipeService.AddRecipeToUserRecipeListAsync(addRecipeToUserRecipeList);
+            if(!isRecipeCreated)
+            {
+                ModelState.AddModelError(string.Empty, "There was an unexpected error with your request. Please try again!");
+                inputModel.Categories = await GetAllCategoriesViewModelAsync();
+
+                return View(inputModel);
+            }
+
+            return RedirectToAction(nameof(MyRecipes));
         }
 
         private async Task<IEnumerable<AllCategoriesViewModel>> GetAllCategoriesViewModelAsync()

@@ -7,6 +7,6 @@ namespace Cookbook.Services.Core.Contracts
     {
         Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData);
 
-        Task<bool> AddRecipeToUserRecipeList(AddRecipeToUserRecipeListRequestData requestData);
+        Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData);
     }
 }

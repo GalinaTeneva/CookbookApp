@@ -14,6 +14,11 @@ namespace Cookbook.Services.Core
             this.dbContext = dbContext;
         }
 
+        public async Task<bool> CategoryExistsAsync(int categoryId)
+        {
+            return await dbContext.Categories.AnyAsync(c => c.Id == categoryId);
+        }
+
         public async Task<IEnumerable<GetAllCategoriesResponseData>> GetAllCategoriesAsync()
         {
             return await dbContext.Categories
