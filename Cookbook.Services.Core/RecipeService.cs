@@ -8,6 +8,7 @@ using Cookbook.Services.Data.Recipe.Response;
 using Cookbook.Services.Data.RecipeIngredient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.Identity.Client;
 
 namespace Cookbook.Services.Core
 {
@@ -80,6 +81,12 @@ namespace Cookbook.Services.Core
             }
         }
 
+        //TODO: Implement the logic
+        public async Task<bool> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData)
         {
             if(string.IsNullOrWhiteSpace(requestData.UserId))
@@ -129,6 +136,35 @@ namespace Cookbook.Services.Core
                     .ToList()
                 })
                 .SingleOrDefaultAsync();
+        }
+        
+        public async Task<GetRecipeForEditResponseData?> GetRecipeForEditAsync(RecipeAccessRequestData accessRequestData)
+        {
+            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+            if (!isUserCreator)
+                return null;
+
+            GetRecipeForEditResponseData? editingRecipe = await dbContext.Recipes
+                .Where(r => r.Id == accessRequestData.RecipeId)
+                .Select(r => new GetRecipeForEditResponseData
+                {
+                    Title = r.Title,
+                    Description = r.Description,
+                    Instructions = r.Instructions,
+                    ImageUrl = r.ImageUrl,
+                    CategoryId = r.CategoryId,
+                    RecipeIngredients = r.RecipeIngredients
+                    .Select(ri => new RecipeIngredientsResponseData()
+                    {
+                        IngredientName = ri.Ingredient.Name,
+                        Quantity = ri.Quantity
+                    })
+                    .OrderBy(ri => ri.IngredientName)
+                    .ToList()
+                })
+                .SingleOrDefaultAsync();
+
+            return editingRecipe;
         }
 
         public Task<bool> IsUserCreatorAsync(RecipeAccessRequestData requestData)
