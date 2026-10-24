@@ -130,5 +130,10 @@ namespace Cookbook.Services.Core
                 })
                 .SingleOrDefaultAsync();
         }
+
+        public Task<bool> IsUserCreatorAsync(IsUserCreatorRequestData requestData)
+        {
+            return dbContext.Recipes.AnyAsync(r => r.Id == requestData.RecipeId && r.UserId == requestData.UserId);
+        }
     }
 }

@@ -25,9 +25,7 @@ namespace Cookbook.Controllers
         {
             string? userId = GetUserId();
             if (userId == null)
-            {
                 return Unauthorized();
-            }
 
             GetAllUserRecipesRequestData requestData = new GetAllUserRecipesRequestData()
             {
@@ -85,11 +83,9 @@ namespace Cookbook.Controllers
             }
 
             bool isCategoryValid = await categoryService.CategoryExistsAsync(inputModel.CategoryId);
-            if(!isCategoryValid)
-            {
+            if (!isCategoryValid)
                 return BadRequest("There was an error with your request!");
-            }
-            
+
             AddRecipeToUserRecipeListRequestData addRecipeToUserRecipeList = new AddRecipeToUserRecipeListRequestData()
             {
                 Title = inputModel.Title,
@@ -103,7 +99,7 @@ namespace Cookbook.Controllers
             };
 
             bool isRecipeCreated = await recipeService.AddRecipeToUserRecipeListAsync(addRecipeToUserRecipeList);
-            if(!isRecipeCreated)
+            if (!isRecipeCreated)
             {
                 ModelState.AddModelError(string.Empty, "There was an unexpected error with your request. Please try again!");
                 inputModel.Categories = await GetAllCategoriesViewModelAsync();
@@ -114,14 +110,25 @@ namespace Cookbook.Controllers
             return RedirectToAction(nameof(MyRecipes));
         }
 
-        //TODO: Check if the logged in user is the owner of the recipe
         [HttpGet]
         public async Task<IActionResult> Details([FromRoute] int id)
         {
-            if(id <= 0)
-            {
+            if (id <= 0)
                 return BadRequest("There was an error with your request!");
-            }
+
+            string? userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            bool isUserCreator = await recipeService.IsUserCreatorAsync(
+                new IsUserCreatorRequestData
+                {
+                    RecipeId = id,
+                    UserId = userId
+                });
+
+            if (!isUserCreator)
+                return NotFound();
 
             GetRecipeDetailsResponseData? responseData = await recipeService.GetRecipeDetailsAsync(id);
             if (responseData == null)
@@ -171,7 +178,7 @@ namespace Cookbook.Controllers
                 .Replace('\r', '\n')
                 .Split('\n');
 
-            var ingredients = new List<RecipeIngredientRequestData>();
+            List<RecipeIngredientRequestData> ingredients = new List<RecipeIngredientRequestData>();
 
             for (int i = 0; i < lines.Length; i++)
             {

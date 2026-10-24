@@ -10,5 +10,7 @@ namespace Cookbook.Services.Core.Contracts
         Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData);
 
         Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(int recipeId);
+
+        Task<bool> IsUserCreatorAsync(IsUserCreatorRequestData requestData);
     }
 }
