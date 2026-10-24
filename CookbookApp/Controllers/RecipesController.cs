@@ -121,7 +121,7 @@ namespace Cookbook.Controllers
                 return Unauthorized();
 
             bool isUserCreator = await recipeService.IsUserCreatorAsync(
-                new IsUserCreatorRequestData
+                new RecipeAccessRequestData
                 {
                     RecipeId = id,
                     UserId = userId
