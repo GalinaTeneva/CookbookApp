@@ -37,8 +37,8 @@ namespace Cookbook.Controllers
                 IEnumerable<GetAllUserRecipesResponseData> userRecipesResponseData = await recipeService.GetAllUserRecipesAsync(requestData);
 
                 IEnumerable<MyRecipesViewModel> userRecipesVieModel = userRecipesResponseData
-                    .OrderBy(r => r.CategoryName)
-                    .ThenByDescending(r => r.CreatedOn)
+                    .OrderByDescending(r => r.CreatedOn)
+                    .ThenBy(r => r.CategoryName)
                     .Select(r => new MyRecipesViewModel()
                     {
                         Id = r.Id,
