@@ -7,6 +7,8 @@ using Cookbook.Web.ViewModels.Genre;
 using Cookbook.Web.ViewModels.Recipe;
 using Cookbook.Web.ViewModels.Ingredient;
 using Microsoft.AspNetCore.Mvc;
+using Cookbook.Services.Data.Ingredient.Response;
+using Cookbook.Data.Models;
 
 namespace Cookbook.Controllers
 {
@@ -156,6 +158,42 @@ namespace Cookbook.Controllers
             return View(displayRecipeViewModel);
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Edit([FromRoute] int id)
+        {
+            if (id <= 0)
+                return BadRequest("There was an error with your request!");
+
+            string? userId = GetUserId();
+            if (string.IsNullOrWhiteSpace(userId))
+                return Unauthorized();
+
+            GetRecipeForEditResponseData? responseData = await recipeService.GetRecipeForEditAsync(
+                new RecipeAccessRequestData
+                {
+                    RecipeId = id,
+                    UserId = userId
+                });
+
+            if (responseData == null)
+                return NotFound();
+
+            EditRecipeInputModel inputModel = new EditRecipeInputModel
+            {
+                Id = id,
+                Title = responseData.Title,
+                Description = responseData.Description,
+                Instructions = responseData.Instructions,
+                ImageUrl = responseData.ImageUrl,
+                CategoryId = responseData.CategoryId,
+                Categories = await GetAllCategoriesViewModelAsync(),
+                IngredientsText = MapIngredientsDTOToText(responseData.RecipeIngredients)
+            };
+
+            return View(inputModel);
+        }
+
+
         private async Task<IEnumerable<AllCategoriesViewModel>> GetAllCategoriesViewModelAsync()
         {
             IEnumerable<GetAllCategoriesResponseData> allCategories = await categoryService.GetAllCategoriesAsync();
@@ -197,6 +235,12 @@ namespace Cookbook.Controllers
             }
 
             return ingredients;
+        }
+
+        private string MapIngredientsDTOToText(IEnumerable<RecipeIngredientsResponseData> recipeIngredients)
+        {
+            return string.Join(Environment.NewLine,
+                recipeIngredients.Select(i => $"{i.Quantity} | {i.IngredientName}"));
         }
     }
 }

@@ -36,10 +36,16 @@
             </div>
 
             <div class="col-lg-3">
-                <div class="d-grid d-lg-flex justify-content-lg-end">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Recipes"
+                       asp-action="Edit"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-outline-success">
+                        Edit Recipe
+                    </a>
                     <a asp-controller="Recipes"
                        asp-action="MyRecipes"
-                       class="btn btn-outline-success">
+                       class="btn btn-outline-secondary">
                         Back to My Recipes
                     </a>
                 </div>
