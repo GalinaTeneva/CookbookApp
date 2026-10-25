@@ -193,6 +193,59 @@ namespace Cookbook.Controllers
             return View(inputModel);
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Edit([FromRoute] int id, EditRecipeInputModel inputModel)
+        {
+            string? userId = GetUserId();
+
+            if (userId == null)
+                return Unauthorized();
+
+            RecipeAccessRequestData accessRequestData = new RecipeAccessRequestData
+            {
+                RecipeId = id,
+                UserId = userId
+            };
+
+            bool isUserCreator = await recipeService.IsUserCreatorAsync(accessRequestData);
+
+            if (!isUserCreator)
+                return NotFound();
+
+
+            if (!ModelState.IsValid)
+            {
+                inputModel.Categories = await GetAllCategoriesViewModelAsync();
+                return View(inputModel);
+            }
+
+            bool isCategoryValid = await categoryService.CategoryExistsAsync(inputModel.CategoryId);
+            if (!isCategoryValid)
+                return BadRequest("There was an error with your request!");
+
+            RecipeForEditRequestData editingRecipeRequestData = new RecipeForEditRequestData
+            {
+                Id = inputModel.Id,
+                Title = inputModel.Title,
+                Description = inputModel.Description,
+                Instructions = inputModel.Instructions,
+                RecipeIngredients = MapIngredientsTextToDTO(inputModel.IngredientsText),
+                ImageUrl = inputModel.ImageUrl,
+                CategoryId = inputModel.CategoryId
+            };
+
+            bool isRecipeEdited = await recipeService.EditRecipeAsync(accessRequestData, editingRecipeRequestData);
+            if (!isRecipeEdited)
+            {
+                ModelState.AddModelError(string.Empty, "There was an unexpected error with your request. Please try again!");
+                inputModel.Categories = await GetAllCategoriesViewModelAsync();
+
+                return View(inputModel);
+            }
+
+            return RedirectToAction(nameof(Details), new { id = id });
+        }
+
 
         private async Task<IEnumerable<AllCategoriesViewModel>> GetAllCategoriesViewModelAsync()
         {

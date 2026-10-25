@@ -26,6 +26,7 @@ namespace Cookbook.Services.Core
             this.ingredientService = ingredientService;
         }
 
+        //TODO: Refactor
         public async Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData)
         {
             try
@@ -81,10 +82,80 @@ namespace Cookbook.Services.Core
             }
         }
 
-        //TODO: Implement the logic
+        //TODO: Refactor
         public async Task<bool> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData)
         {
-            throw new NotImplementedException();
+            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+            if (!isUserCreator)
+                return false;
+
+            Recipe? editingRecipe = await dbContext.Recipes
+                .Include(r => r.RecipeIngredients)
+                .FirstOrDefaultAsync(r => r.Id == requestData.Id);
+            if(editingRecipe == null)
+                return false;
+
+            try
+            {
+                List<RecipeIngredientRequestData> requestedIngredients = requestData.RecipeIngredients.ToList();
+
+                Dictionary<int, string> requestedQuantities = new Dictionary<int, string>();
+
+                foreach (var item in requestedIngredients)
+                {
+                    IngredientResponseData ingredient =
+                        await ingredientService.FindOrCreateAsync(
+                            new IngredientRequestData
+                            {
+                                Name = item.IngredientName
+                            });
+
+                    if (!requestedQuantities.TryAdd(ingredient.Id, item.Quantity))
+                    {
+                        throw new ArgumentException(
+                            $"Ingredient '{ingredient.Name}' appears more than once.", nameof(requestData));
+                    }
+                }
+
+                foreach(RecipeIngredient existingIngredient in editingRecipe.RecipeIngredients.ToList())
+                {
+                    if(requestedQuantities.TryGetValue(existingIngredient.IngredientId, out string? quantity))
+                    {
+                        existingIngredient.Quantity = quantity;
+                        requestedQuantities.Remove(existingIngredient.IngredientId);
+                    }
+                    else
+                    {
+                        editingRecipe.RecipeIngredients.Remove(existingIngredient);
+                        dbContext.RecipesIngredients.Remove(existingIngredient);
+                    }
+                }
+
+                foreach(KeyValuePair<int, string> ingredient in requestedQuantities)
+                {
+                    editingRecipe.RecipeIngredients.Add(new RecipeIngredient
+                    {
+                        RecipeId = editingRecipe.Id,
+                        IngredientId = ingredient.Key,
+                        Quantity = ingredient.Value
+                    });
+                }
+
+                editingRecipe.Title = requestData.Title;
+                editingRecipe.Description = requestData.Description;
+                editingRecipe.Instructions = requestData.Instructions;
+                editingRecipe.ImageUrl = requestData.ImageUrl;
+                editingRecipe.CategoryId = requestData.CategoryId;
+
+                await dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch(Exception e)
+            {
+                logger.LogError(e, "An error occured while editing a new recipe.");
+                return false;
+            }
         }
 
         public async Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData)

@@ -1,5 +1,4 @@
-﻿using Cookbook.Services.Data.Ingredient.Response;
-using Cookbook.Services.Data.RecipeIngredient;
+﻿using Cookbook.Services.Data.RecipeIngredient;
 
 namespace Cookbook.Services.Data.Recipe.Request
 {
@@ -18,7 +17,5 @@ namespace Cookbook.Services.Data.Recipe.Request
         public IEnumerable<RecipeIngredientRequestData> RecipeIngredients { get; set; } = new List<RecipeIngredientRequestData>();
 
         public int CategoryId { get; set; }
-
-        public string UserId { get; set; } = null!;
     }
 }
