@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Cookbook
 {
-    //TODO: Edit the Identity Pages UI styling
     public class Program
     {
         public static void Main(string[] args)

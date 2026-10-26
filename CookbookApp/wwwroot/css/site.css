@@ -20,3 +20,21 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Primary buttons and the selected account menu item. */
+.btn-primary,
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active,
+.btn-primary:active:focus,
+.nav-pills .nav-link.active {
+    color: white;
+    background-color: #198754;
+    border-color: #198754;
+}
+
+/* Account menu links. */
+.nav-pills .nav-link:not(.active) {
+    color: #198754;
+}
+
