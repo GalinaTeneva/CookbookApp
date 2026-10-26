@@ -8,7 +8,6 @@ using Cookbook.Services.Data.Recipe.Response;
 using Cookbook.Services.Data.RecipeIngredient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.Identity.Client;
 
 namespace Cookbook.Services.Core
 {
@@ -58,7 +57,7 @@ namespace Cookbook.Services.Core
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e, "An error occured while adding a new recipe.");
                 return false;
@@ -74,7 +73,7 @@ namespace Cookbook.Services.Core
             Recipe? editingRecipe = await dbContext.Recipes
                 .Include(r => r.RecipeIngredients)
                 .FirstOrDefaultAsync(r => r.Id == requestData.Id);
-            if(editingRecipe == null)
+            if (editingRecipe == null)
                 return false;
 
             try
@@ -83,9 +82,9 @@ namespace Cookbook.Services.Core
 
                 Dictionary<int, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
 
-                foreach(RecipeIngredient existingIngredient in editingRecipe.RecipeIngredients.ToList())
+                foreach (RecipeIngredient existingIngredient in editingRecipe.RecipeIngredients.ToList())
                 {
-                    if(requestedIngredientQuantities.TryGetValue(existingIngredient.IngredientId, out string? quantity))
+                    if (requestedIngredientQuantities.TryGetValue(existingIngredient.IngredientId, out string? quantity))
                     {
                         existingIngredient.Quantity = quantity;
                         requestedIngredientQuantities.Remove(existingIngredient.IngredientId);
@@ -97,7 +96,7 @@ namespace Cookbook.Services.Core
                     }
                 }
 
-                foreach(KeyValuePair<int, string> ingredient in requestedIngredientQuantities)
+                foreach (KeyValuePair<int, string> ingredient in requestedIngredientQuantities)
                 {
                     editingRecipe.RecipeIngredients.Add(new RecipeIngredient
                     {
@@ -118,7 +117,7 @@ namespace Cookbook.Services.Core
 
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e, "An error occured while editing a recipe.");
                 return false;
@@ -127,7 +126,7 @@ namespace Cookbook.Services.Core
 
         public async Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData)
         {
-            if(string.IsNullOrWhiteSpace(requestData.UserId))
+            if (string.IsNullOrWhiteSpace(requestData.UserId))
             {
                 throw new ArgumentException("UserId can not be null or empty", nameof(requestData.UserId));
             }
@@ -157,7 +156,7 @@ namespace Cookbook.Services.Core
                     Id = r.Id,
                     Title = r.Title,
                     Description = r.Description,
-                    InstructionSteps = r.Instructions.Split(new[] { '*' },StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
+                    InstructionSteps = r.Instructions.Split(new[] { '*' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries),
                     ImageUrl = r.ImageUrl,
                     CreatedOn = r.CreatedOn,
                     CategoryId = r.Category.Id,
@@ -175,7 +174,7 @@ namespace Cookbook.Services.Core
                 })
                 .SingleOrDefaultAsync();
         }
-        
+
         public async Task<GetRecipeForEditResponseData?> GetRecipeForEditAsync(RecipeAccessRequestData accessRequestData)
         {
             bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
@@ -205,14 +204,57 @@ namespace Cookbook.Services.Core
             return editingRecipe;
         }
 
+        public async Task<bool> DeleteRecipeAsync(RecipeAccessRequestData accessRequestData)
+        {
+            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+            if (!isUserCreator)
+                return false;
+
+            try
+            {
+                Recipe? deletingRecipe = await dbContext.Recipes.FirstOrDefaultAsync(r => r.Id == accessRequestData.RecipeId);
+                if (deletingRecipe == null)
+                    return false;
+
+                dbContext.Recipes.Remove(deletingRecipe);
+                await dbContext.SaveChangesAsync();
+
+                return true;
+            }
+            catch(Exception e)
+            {
+                logger.LogError(e, "An error occurred while deleting recipe {RecipeId}.", accessRequestData.RecipeId);
+
+                return false;
+            }
+        }
+
+        public async Task<DeleteRecipeResponseData?> GetRecipeDeleteDetailsAsync(RecipeAccessRequestData accessRequestData)
+        {
+            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+            if (!isUserCreator)
+                return null;
+
+            DeleteRecipeResponseData? deleteRecipe = await dbContext.Recipes
+                .Where(r => r.Id == accessRequestData.RecipeId)
+                .Select(r => new DeleteRecipeResponseData
+                {
+                    Id = r.Id,
+                    Title = r.Title
+                })
+                .SingleOrDefaultAsync();
+
+            return deleteRecipe;
+        }
+
         public Task<bool> IsUserCreatorAsync(RecipeAccessRequestData requestData)
         {
             return dbContext.Recipes.AnyAsync(r => r.Id == requestData.RecipeId && r.UserId == requestData.UserId);
         }
 
-        private async Task<Dictionary<int, string>> ResolveIngredientQuantitiesAsync (IEnumerable<RecipeIngredientRequestData> requestedIngredients)
+        private async Task<Dictionary<int, string>> ResolveIngredientQuantitiesAsync(IEnumerable<RecipeIngredientRequestData> requestedIngredients)
         {
-            Dictionary<int, string> ingredientQuantities = new Dictionary<int, string> ();
+            Dictionary<int, string> ingredientQuantities = new Dictionary<int, string>();
 
             foreach (var item in requestedIngredients)
             {
@@ -222,7 +264,7 @@ namespace Cookbook.Services.Core
                         Name = item.IngredientName
                     });
 
-                if(!ingredientQuantities.TryAdd(ingredient.Id, item.Quantity))
+                if (!ingredientQuantities.TryAdd(ingredient.Id, item.Quantity))
                 {
                     throw new ArgumentException($"Ingredient '{ingredient.Name}' appears more than once.", nameof(requestedIngredients));
                 }
@@ -230,5 +272,6 @@ namespace Cookbook.Services.Core
 
             return ingredientQuantities;
         }
-    }
+
+    }  
 }

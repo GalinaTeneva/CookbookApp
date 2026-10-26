@@ -246,6 +246,77 @@ namespace Cookbook.Controllers
             return RedirectToAction(nameof(Details), new { id = id });
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            string? userId = GetUserId();
+
+            if (userId == null)
+                return Unauthorized();
+
+            RecipeAccessRequestData accessRequestData = new RecipeAccessRequestData
+            {
+                RecipeId = id,
+                UserId = userId
+            };
+
+            bool isUserCreator = await recipeService.IsUserCreatorAsync(accessRequestData);
+
+            if (!isUserCreator)
+                return NotFound();
+
+            DeleteRecipeResponseData? deleteRecipeResponse = await recipeService.GetRecipeDeleteDetailsAsync(accessRequestData);
+
+            if (deleteRecipeResponse == null)
+                return NotFound();
+
+            DeleteRecipeViewModel deleteRecipeViewModel = new DeleteRecipeViewModel
+            {
+                Id = deleteRecipeResponse.Id,
+                Title = deleteRecipeResponse.Title
+            };
+
+            return View(deleteRecipeViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Delete([FromRoute] int id, DeleteRecipeViewModel inputModel)
+        {
+            string? userId = GetUserId();
+
+            if (userId == null)
+                return Unauthorized();
+
+            RecipeAccessRequestData accessRequestData = new RecipeAccessRequestData
+            {
+                RecipeId = id,
+                UserId = userId
+            };
+
+            bool isUserCreator = await recipeService.IsUserCreatorAsync(accessRequestData);
+
+            if (!isUserCreator)
+                return NotFound();
+
+            bool isDeleted = await recipeService.DeleteRecipeAsync(accessRequestData);
+            if(!isDeleted)
+            {
+                DeleteRecipeResponseData? responseData = await recipeService
+                    .GetRecipeDeleteDetailsAsync(accessRequestData);
+                if (responseData == null)
+                    return NotFound();
+
+                inputModel.Id = responseData.Id;
+                inputModel.Title = responseData.Title;
+
+                ModelState.AddModelError(string.Empty, "There was an unexpected error with your request. Please try again!");
+
+                return View(inputModel);
+            }
+
+            return RedirectToAction(nameof(MyRecipes));
+        }
+
 
         private async Task<IEnumerable<AllCategoriesViewModel>> GetAllCategoriesViewModelAsync()
         {

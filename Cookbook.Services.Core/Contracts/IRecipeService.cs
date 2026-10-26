@@ -17,5 +17,9 @@ namespace Cookbook.Services.Core.Contracts
         Task<GetRecipeForEditResponseData?> GetRecipeForEditAsync(RecipeAccessRequestData accessRequestData);
 
         Task<bool> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData);
+
+        Task<DeleteRecipeResponseData> GetRecipeDeleteDetailsAsync(RecipeAccessRequestData accessRequestData);
+
+        Task<bool> DeleteRecipeAsync(RecipeAccessRequestData accessRequestData);
     }
 }

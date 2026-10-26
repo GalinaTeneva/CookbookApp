@@ -44,6 +44,12 @@
                         Edit Recipe
                     </a>
                     <a asp-controller="Recipes"
+                       asp-action="Delete"
+                       asp-route-id="@Model.Id"
+                       class="btn btn-outline-danger">
+                        Delete Recipe
+                    </a>
+                    <a asp-controller="Recipes"
                        asp-action="MyRecipes"
                        class="btn btn-outline-secondary">
                         Back to My Recipes
