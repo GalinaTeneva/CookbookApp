@@ -9,6 +9,7 @@ using Cookbook.Web.ViewModels.Ingredient;
 using Microsoft.AspNetCore.Mvc;
 using Cookbook.Services.Data.Ingredient.Response;
 using Cookbook.Data.Models;
+using Cookbook.Web.ViewModels.Overview;
 
 namespace Cookbook.Controllers
 {
@@ -21,6 +22,60 @@ namespace Cookbook.Controllers
         {
             this.recipeService = recipeService;
             this.categoryService = categoryService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            string? userId = GetUserId();
+            if (userId == null)
+                return Unauthorized();
+
+            GetAllUserRecipesRequestData requestData = new GetAllUserRecipesRequestData
+            {
+                UserId = userId
+            };
+
+            try
+            {
+                var recipes = (await recipeService.GetAllUserRecipesAsync(requestData)).ToArray();
+
+                MyRecipesViewModel? latestRecipe = recipes
+                    .OrderByDescending(r => r.CreatedOn)
+                    .ThenByDescending(r => r.Id)
+                    .Take(1)
+                    .Select(r => new MyRecipesViewModel
+                    {
+                        Id = r.Id,
+                        Title = r.Title,
+                        ImageUrl = r.ImageUrl,
+                        CategoryName = r.CategoryName,
+                        CreatedOn = r.CreatedOn.ToString()
+                    })
+                    .SingleOrDefault();
+
+                CookbookOverviewViewModel viewModel = new CookbookOverviewViewModel
+                {
+                    TotalRecipes = recipes.Length,
+                    Categories = recipes
+                    .GroupBy(r => r.CategoryName)
+                    .Select(group => new CategoryOverviewViewModel
+                    {
+                        CategoryName = group.Key,
+                        RecipeCount = group.Count()
+                    })
+                    .OrderByDescending(r => r.RecipeCount)
+                    .ThenBy(r => r.CategoryName)
+                    .ToArray(),
+                    LatestRecipe = latestRecipe
+                };
+
+                return View(viewModel);
+            }
+            catch(ArgumentException ae)
+            {
+                return BadRequest(ae.Message);
+            }
         }
 
         public async Task<IActionResult> MyRecipes()
