@@ -177,17 +177,18 @@ namespace Cookbook.Controllers
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized();
 
-            bool isUserCreator = await recipeService.IsUserCreatorAsync(
-                new RecipeAccessRequestData
-                {
-                    RecipeId = id,
-                    UserId = userId
-                });
+            RecipeAccessRequestData accessRequestData = new RecipeAccessRequestData
+            {
+                RecipeId = id,
+                UserId = userId
+            };
+
+            bool isUserCreator = await recipeService.IsUserCreatorAsync(accessRequestData);
 
             if (!isUserCreator)
                 return NotFound();
 
-            GetRecipeDetailsResponseData? responseData = await recipeService.GetRecipeDetailsAsync(id);
+            GetRecipeDetailsResponseData? responseData = await recipeService.GetRecipeDetailsAsync(accessRequestData);
             if (responseData == null)
                 return NotFound();
 
