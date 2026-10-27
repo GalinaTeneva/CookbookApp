@@ -8,9 +8,8 @@ namespace Cookbook.Services.Core.Contracts
         Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData);
 
         Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData);
-
-        //TODO: Use RecipeAccessRequestData in the method + check the ownership in the service method implementation
-        Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(int recipeId);
+        
+        Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(RecipeAccessRequestData accessRequestData);
 
         Task<bool> IsUserCreatorAsync(RecipeAccessRequestData accessRequestData);
 

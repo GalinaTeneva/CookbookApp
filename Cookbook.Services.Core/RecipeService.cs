@@ -147,10 +147,14 @@ namespace Cookbook.Services.Core
             return responseData;
         }
 
-        public async Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(int recipeId)
+        public async Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(RecipeAccessRequestData accessRequestData)
         {
+            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+            if (!isUserCreator)
+                return null;
+
             return await dbContext.Recipes
-                .Where(r => r.Id == recipeId)
+                .Where(r => r.Id == accessRequestData.RecipeId)
                 .Select(r => new GetRecipeDetailsResponseData()
                 {
                     Id = r.Id,
