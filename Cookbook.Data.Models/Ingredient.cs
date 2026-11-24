@@ -9,6 +9,7 @@ namespace Cookbook.Data.Models
         [Key]
         public int Id { get; set; }
 
+        //TODO: Consider making the name unique
         [Required]
         [MaxLength(NameMaxLength)]
         public string Name { get; set; } = null!;

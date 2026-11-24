@@ -1,5 +1,5 @@
-﻿using Cookbook.Data;
-using Cookbook.Data.Models;
+﻿using Cookbook.Data.Models;
+using Cookbook.Data.Repository.Contracts;
 using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Ingredient.Request;
 using Cookbook.Services.Data.Ingredient.Response;
@@ -9,11 +9,11 @@ namespace Cookbook.Services.Core
 {
     public class IngredientService : IIngredientService
     {
-        private readonly CookbookDbContext dbContext;
+        private readonly IIngredientRepository ingredientRepository;
 
-        public IngredientService(CookbookDbContext dbContext)
+        public IngredientService(IIngredientRepository ingredientRepository)
         {
-            this.dbContext = dbContext;
+            this.ingredientRepository = ingredientRepository;
         }
 
         public async Task<IngredientResponseData> FindOrCreateAsync(IngredientRequestData requestData)
@@ -25,14 +25,16 @@ namespace Cookbook.Services.Core
 
             string normalizedName = requestData.Name.Trim().ToLowerInvariant();
 
-            Ingredient? ingredient = await dbContext.Ingredients.FirstOrDefaultAsync(i => i.Name.ToLower() == normalizedName);
+            Ingredient? ingredient = await ingredientRepository
+                .AllAsNoTracking()
+                .FirstOrDefaultAsync(i => i.Name.ToLower() == normalizedName);
 
             if(ingredient ==  null)
             {
-                ingredient = new Ingredient { Name = requestData.Name };
+                ingredient = new Ingredient { Name = normalizedName };
 
-                await dbContext.Ingredients.AddAsync(ingredient);
-                await dbContext.SaveChangesAsync();
+                await ingredientRepository.AddAsync(ingredient);
+                await ingredientRepository.SaveChangesAsync();
             }
 
             return new IngredientResponseData

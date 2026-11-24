@@ -1,7 +1,6 @@
-﻿using Cookbook.Data;
-using Cookbook.Data.Models;
+﻿using Cookbook.Data.Models;
+using Cookbook.Data.Repository.Contracts;
 using Cookbook.Services.Core.Contracts;
-using Cookbook.Services.Data.Ingredient.Request;
 using Cookbook.Services.Data.Ingredient.Response;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
@@ -13,25 +12,23 @@ namespace Cookbook.Services.Core
 {
     public class RecipeService : IRecipeService
     {
-        private readonly CookbookDbContext dbContext;
+        private readonly IRecipeRepository recipeRepository;
+        private readonly IIngredientRepository ingredientRepository;
         private readonly ILogger<RecipeService> logger;
 
-        private IIngredientService ingredientService;
 
-        public RecipeService(CookbookDbContext dbContext, ILogger<RecipeService> logger, IIngredientService ingredientService)
+        public RecipeService(IRecipeRepository recipeRepository, ILogger<RecipeService> logger, IIngredientRepository ingredientRepository)
         {
-            this.dbContext = dbContext;
+            this.recipeRepository = recipeRepository;
+            this.ingredientRepository = ingredientRepository;
             this.logger = logger;
-            this.ingredientService = ingredientService;
         }
 
         public async Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData)
         {
             try
             {
-                await using var transaction = await dbContext.Database.BeginTransactionAsync();
-
-                Dictionary<int, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
+                Dictionary<Ingredient, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
 
                 Recipe newRecipe = new Recipe
                 {
@@ -45,15 +42,14 @@ namespace Cookbook.Services.Core
                     RecipeIngredients = requestedIngredientQuantities
                     .Select(i => new RecipeIngredient
                     {
-                        IngredientId = i.Key,
+                        Ingredient = i.Key,
                         Quantity = i.Value,
                     })
                     .ToArray()
                 };
 
-                await dbContext.Recipes.AddAsync(newRecipe);
-                await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await recipeRepository.AddAsync(newRecipe);
+                await recipeRepository.SaveChangesAsync();
 
                 return true;
             }
@@ -67,41 +63,40 @@ namespace Cookbook.Services.Core
         public async Task<bool> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData)
         {
             bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
-            if (!isUserCreator)
-                return false;
-
-            Recipe? editingRecipe = await dbContext.Recipes
-                .Include(r => r.RecipeIngredients)
-                .FirstOrDefaultAsync(r => r.Id == requestData.Id);
-            if (editingRecipe == null)
+            if (!isUserCreator || requestData.Id != accessRequestData.RecipeId)
                 return false;
 
             try
             {
-                await using var transaction = await dbContext.Database.BeginTransactionAsync();
+                Recipe? editingRecipe = await recipeRepository
+                    .GetAll()
+                    .Include(r => r.RecipeIngredients)
+                    .ThenInclude(ri => ri.Ingredient)
+                    .FirstOrDefaultAsync(r => r.Id == requestData.Id);
+                if (editingRecipe == null)
+                    return false;
 
-                Dictionary<int, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
+                Dictionary<Ingredient, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
 
                 foreach (RecipeIngredient existingIngredient in editingRecipe.RecipeIngredients.ToList())
                 {
-                    if (requestedIngredientQuantities.TryGetValue(existingIngredient.IngredientId, out string? quantity))
+                    if (requestedIngredientQuantities.TryGetValue(existingIngredient.Ingredient, out string? quantity))
                     {
                         existingIngredient.Quantity = quantity;
-                        requestedIngredientQuantities.Remove(existingIngredient.IngredientId);
+                        requestedIngredientQuantities.Remove(existingIngredient.Ingredient);
                     }
                     else
                     {
                         editingRecipe.RecipeIngredients.Remove(existingIngredient);
-                        dbContext.RecipesIngredients.Remove(existingIngredient);
                     }
                 }
 
-                foreach (KeyValuePair<int, string> ingredient in requestedIngredientQuantities)
+                foreach (KeyValuePair<Ingredient, string> ingredient in requestedIngredientQuantities)
                 {
                     editingRecipe.RecipeIngredients.Add(new RecipeIngredient
                     {
                         RecipeId = editingRecipe.Id,
-                        IngredientId = ingredient.Key,
+                        Ingredient = ingredient.Key,
                         Quantity = ingredient.Value
                     });
                 }
@@ -112,8 +107,7 @@ namespace Cookbook.Services.Core
                 editingRecipe.ImageUrl = requestData.ImageUrl;
                 editingRecipe.CategoryId = requestData.CategoryId;
 
-                await dbContext.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await recipeRepository.SaveChangesAsync();
 
                 return true;
             }
@@ -131,8 +125,9 @@ namespace Cookbook.Services.Core
                 throw new ArgumentException("UserId can not be null or empty", nameof(requestData.UserId));
             }
 
-            IEnumerable<GetAllUserRecipesResponseData> responseData = await dbContext.Recipes
-                .Where(r => r.UserId.ToLower() == requestData.UserId.ToLower())
+            IEnumerable<GetAllUserRecipesResponseData> responseData = await recipeRepository
+                .AllAsNoTracking()
+                .Where(r => r.UserId == requestData.UserId)
                 .Select(r => new GetAllUserRecipesResponseData
                 {
                     Id = r.Id,
@@ -153,7 +148,8 @@ namespace Cookbook.Services.Core
             if (!isUserCreator)
                 return null;
 
-            return await dbContext.Recipes
+            return await recipeRepository
+                .AllAsNoTracking()
                 .Where(r => r.Id == accessRequestData.RecipeId)
                 .Select(r => new GetRecipeDetailsResponseData()
                 {
@@ -185,7 +181,8 @@ namespace Cookbook.Services.Core
             if (!isUserCreator)
                 return null;
 
-            GetRecipeForEditResponseData? editingRecipe = await dbContext.Recipes
+            GetRecipeForEditResponseData? editingRecipe = await recipeRepository
+                .AllAsNoTracking()
                 .Where(r => r.Id == accessRequestData.RecipeId)
                 .Select(r => new GetRecipeForEditResponseData
                 {
@@ -216,12 +213,12 @@ namespace Cookbook.Services.Core
 
             try
             {
-                Recipe? deletingRecipe = await dbContext.Recipes.FirstOrDefaultAsync(r => r.Id == accessRequestData.RecipeId);
+                Recipe? deletingRecipe = await recipeRepository.FindByIdAsync(accessRequestData.RecipeId);
                 if (deletingRecipe == null)
                     return false;
 
-                dbContext.Recipes.Remove(deletingRecipe);
-                await dbContext.SaveChangesAsync();
+                recipeRepository.Remove(deletingRecipe);
+                await recipeRepository.SaveChangesAsync();
 
                 return true;
             }
@@ -239,7 +236,8 @@ namespace Cookbook.Services.Core
             if (!isUserCreator)
                 return null;
 
-            DeleteRecipeResponseData? deleteRecipe = await dbContext.Recipes
+            DeleteRecipeResponseData? deleteRecipe = await recipeRepository
+                .AllAsNoTracking()
                 .Where(r => r.Id == accessRequestData.RecipeId)
                 .Select(r => new DeleteRecipeResponseData
                 {
@@ -253,29 +251,49 @@ namespace Cookbook.Services.Core
 
         public Task<bool> IsUserCreatorAsync(RecipeAccessRequestData requestData)
         {
-            return dbContext.Recipes.AnyAsync(r => r.Id == requestData.RecipeId && r.UserId == requestData.UserId);
+            return recipeRepository
+                .AllAsNoTracking()
+                .AnyAsync(r => r.Id == requestData.RecipeId && r.UserId == requestData.UserId);
         }
 
-        private async Task<Dictionary<int, string>> ResolveIngredientQuantitiesAsync(IEnumerable<RecipeIngredientRequestData> requestedIngredients)
+        private async Task<Dictionary<Ingredient, string>> ResolveIngredientQuantitiesAsync(IEnumerable<RecipeIngredientRequestData> requestedIngredients)
         {
-            Dictionary<int, string> ingredientQuantities = new Dictionary<int, string>();
+            Dictionary<string, string> requestedQuantities = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
             foreach (var item in requestedIngredients)
             {
-                IngredientResponseData ingredient = await ingredientService.FindOrCreateAsync(
-                    new IngredientRequestData
-                    {
-                        Name = item.IngredientName
-                    });
+                if (string.IsNullOrWhiteSpace(item.IngredientName))
+                    throw new ArgumentException("Ingredient name can not be empty.");
 
-                if (!ingredientQuantities.TryAdd(ingredient.Id, item.Quantity))
-                {
-                    throw new ArgumentException($"Ingredient '{ingredient.Name}' appears more than once.", nameof(requestedIngredients));
-                }
+                string name = item.IngredientName.Trim();
+
+                if (!requestedQuantities.TryAdd(name, item.Quantity))
+                    throw new ArgumentException($"Ingredient \"{name}\" appears more than once.");
             }
 
-            return ingredientQuantities;
-        }
+            Dictionary<Ingredient, string> resolvedIngredients = new Dictionary<Ingredient, string>();
 
+            foreach (var item in requestedQuantities)
+            {
+                string name = item.Key.ToLowerInvariant();
+                string quantity = item.Value;
+
+                Ingredient? ingredient = await ingredientRepository.GetAll().FirstOrDefaultAsync(i => i.Name.ToLower() == name);
+
+                if(ingredient == null)
+                {
+                    ingredient = new Ingredient()
+                    {
+                        Name = name,
+                    };
+
+                    ingredientRepository.Add(ingredient);
+
+                }    
+                    resolvedIngredients.Add(ingredient, quantity);
+            }
+
+            return resolvedIngredients;
+        }
     }  
 }

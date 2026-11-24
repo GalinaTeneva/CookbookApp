@@ -1,4 +1,4 @@
-﻿using Cookbook.Data;
+﻿using Cookbook.Data.Repository.Contracts;
 using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Genre;
 using Microsoft.EntityFrameworkCore;
@@ -7,21 +7,24 @@ namespace Cookbook.Services.Core
 {
     public class CategoryService : ICategoryService
     {
-        private readonly CookbookDbContext dbContext;
+        private readonly ICategoryRepository categoryRepository;
 
-        public CategoryService(CookbookDbContext dbContext)
+        public CategoryService(ICategoryRepository categoryRepository)
         {
-            this.dbContext = dbContext;
+            this.categoryRepository = categoryRepository;
         }
 
         public async Task<bool> CategoryExistsAsync(int categoryId)
         {
-            return await dbContext.Categories.AnyAsync(c => c.Id == categoryId);
+            return await categoryRepository
+                .AllAsNoTracking()
+                .AnyAsync(c => c.Id == categoryId);
         }
 
         public async Task<IEnumerable<GetAllCategoriesResponseData>> GetAllCategoriesAsync()
         {
-            return await dbContext.Categories
+            return await categoryRepository
+                .AllAsNoTracking()
                 .Select(c => new GetAllCategoriesResponseData()
                 {
                     Id = c.Id,

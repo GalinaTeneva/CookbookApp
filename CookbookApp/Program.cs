@@ -1,4 +1,6 @@
 using Cookbook.Data;
+using Cookbook.Data.Repository;
+using Cookbook.Data.Repository.Contracts;
 using Cookbook.Services.Core;
 using Cookbook.Services.Core.Contracts;
 using Microsoft.AspNetCore.Identity;
@@ -17,6 +19,11 @@ namespace Cookbook
             builder.Services.AddDbContext<CookbookDbContext>(options =>
                 options.UseSqlServer(connectionString));
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+
+            //TODO: Implement Auto repositories registration via Reflection
+            builder.Services.AddScoped<IRecipeRepository, RecipeRepository>();
+            builder.Services.AddScoped<ICategoryRepository,  CategoryRepository>();
+            builder.Services.AddScoped<IIngredientRepository, IngredientRepository>();
 
             builder.Services.AddDefaultIdentity<IdentityUser>(options =>
             {
