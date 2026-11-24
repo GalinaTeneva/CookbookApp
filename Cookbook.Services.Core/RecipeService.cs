@@ -59,7 +59,7 @@ namespace Cookbook.Services.Core
             }
             catch (Exception e)
             {
-                logger.LogError(e, "An error occured while adding a new recipe.");
+                logger.LogError(e, "An error occurred while adding a new recipe.");
                 return false;
             }
         }
@@ -119,7 +119,7 @@ namespace Cookbook.Services.Core
             }
             catch (Exception e)
             {
-                logger.LogError(e, "An error occured while editing a recipe.");
+                logger.LogError(e, "An error occurred while editing a recipe.");
                 return false;
             }
         }

@@ -4,7 +4,6 @@ using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Ingredient.Request;
 using Cookbook.Services.Data.Ingredient.Response;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace Cookbook.Services.Core
 {

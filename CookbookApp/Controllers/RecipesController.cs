@@ -1,15 +1,14 @@
 ﻿using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Genre;
+using Cookbook.Services.Data.Ingredient.Response;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
 using Cookbook.Services.Data.RecipeIngredient;
 using Cookbook.Web.ViewModels.Genre;
-using Cookbook.Web.ViewModels.Recipe;
 using Cookbook.Web.ViewModels.Ingredient;
-using Microsoft.AspNetCore.Mvc;
-using Cookbook.Services.Data.Ingredient.Response;
-using Cookbook.Data.Models;
 using Cookbook.Web.ViewModels.Overview;
+using Cookbook.Web.ViewModels.Recipe;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Cookbook.Controllers
 {
