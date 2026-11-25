@@ -1,15 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 using static Cookbook.Common.EntityValidation.IngredientEntityValidation;
 
 namespace Cookbook.Data.Models
 {
+    [Comment("Stores ingredients used for recipes.")]
     public class Ingredient
     {
         [Key]
         public int Id { get; set; }
 
-        //TODO: Consider making the name unique
         [Required]
         [MaxLength(NameMaxLength)]
         public string Name { get; set; } = null!;

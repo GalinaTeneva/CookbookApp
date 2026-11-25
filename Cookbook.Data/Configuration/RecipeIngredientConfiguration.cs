@@ -6,7 +6,7 @@ namespace Cookbook.Data.Configuration
 {
     internal class RecipeIngredientConfiguration : IEntityTypeConfiguration<RecipeIngredient>
     {
-        public static IEnumerable<RecipeIngredient> SeededRecipesIngredients = new List<RecipeIngredient>
+        public static readonly IEnumerable<RecipeIngredient> SeededRecipesIngredients = new List<RecipeIngredient>
         {
             // Recipe 1: Fluffy Homemade Pancakes
                 new RecipeIngredient

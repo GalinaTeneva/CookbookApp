@@ -36,5 +36,11 @@
             public const int IngredientQuantityMinLength = 2;
             public const int IngredientQuantityMaxLength = 70;
         }
+
+        public static class PlannedMealEntityValidation
+        {
+            //PlannedDate
+            public const string PlannedDateColumnType = "date";
+        }
     }
 }

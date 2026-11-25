@@ -6,7 +6,7 @@ namespace Cookbook.Data.Configuration
 {
     public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {
-        public static IEnumerable<Category> SeedCategories = new List<Category>
+        public static readonly IEnumerable<Category> SeedCategories = new List<Category>
         {
             new Category{Id = 1, Name = "Breakfast"},
             new Category{Id = 2, Name = "Lunch"},

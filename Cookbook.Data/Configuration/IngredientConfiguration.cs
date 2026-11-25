@@ -6,7 +6,7 @@ namespace Cookbook.Data.Configuration
 {
     public class IngredientConfiguration : IEntityTypeConfiguration<Ingredient>
     {
-        public static IEnumerable<Ingredient> SeedIngredients = new List<Ingredient>
+        public static readonly IEnumerable<Ingredient> SeedIngredients = new List<Ingredient>
         {
             new Ingredient { Id = 1, Name = "Flour" },
             new Ingredient { Id = 2, Name = "Baking powder" },
@@ -29,6 +29,9 @@ namespace Cookbook.Data.Configuration
         public void Configure(EntityTypeBuilder<Ingredient> builder)
         {
             builder.HasData(SeedIngredients);
+
+            builder.HasIndex(i => i.Name)
+                .IsUnique();
         }
     }
 }

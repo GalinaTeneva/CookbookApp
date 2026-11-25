@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 
 using static Cookbook.Common.EntityValidation.CategoryEntityValidation;
 
 namespace Cookbook.Data.Models
 {
+    [Comment("Stores categories used to classify recipes.")]
     public class Category
     {
         [Key]

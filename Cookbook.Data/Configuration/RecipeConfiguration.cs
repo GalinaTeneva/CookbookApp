@@ -6,7 +6,7 @@ namespace Cookbook.Data.Configuration
 {
     public class RecipeConfiguration : IEntityTypeConfiguration<Recipe>
     {
-        public static IEnumerable<Recipe> SeedRecipes = new List<Recipe>()
+        public static readonly IEnumerable<Recipe> SeedRecipes = new List<Recipe>()
         {
             new Recipe
             {

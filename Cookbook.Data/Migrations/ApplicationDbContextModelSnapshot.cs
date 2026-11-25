@@ -37,7 +37,10 @@ namespace Cookbook.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", t =>
+                        {
+                            t.HasComment("Stores categories used to classify recipes.");
+                        });
 
                     b.HasData(
                         new
@@ -87,7 +90,13 @@ namespace Cookbook.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Ingredients");
+                    b.HasIndex("Name")
+                        .IsUnique();
+
+                    b.ToTable("Ingredients", t =>
+                        {
+                            t.HasComment("Stores ingredients used for recipes.");
+                        });
 
                     b.HasData(
                         new
@@ -172,6 +181,66 @@ namespace Cookbook.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Cookbook.Data.Models.PlannedMeal", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("PlannedDate")
+                        .HasColumnType("date");
+
+                    b.Property<int>("RecipeId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("RecipeId");
+
+                    b.HasIndex("UserId", "PlannedDate", "RecipeId")
+                        .IsUnique();
+
+                    b.ToTable("PlannedMeal", t =>
+                        {
+                            t.HasComment("Stores recipes scheduled for specific dates.");
+                        });
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Notes = "Weekend pancake breakfast.",
+                            PlannedDate = new DateOnly(2026, 10, 28),
+                            RecipeId = 1,
+                            UserId = "4dd95024-058e-44aa-a548-8d28b38a6e41"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Notes = "Serve the pasta with a fresh salad.",
+                            PlannedDate = new DateOnly(2026, 10, 28),
+                            RecipeId = 2,
+                            UserId = "4dd95024-058e-44aa-a548-8d28b38a6e41"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Notes = "Serve the apple crumble warm.",
+                            PlannedDate = new DateOnly(2026, 10, 28),
+                            RecipeId = 3,
+                            UserId = "4dd95024-058e-44aa-a548-8d28b38a6e41"
+                        });
+                });
+
             modelBuilder.Entity("Cookbook.Data.Models.Recipe", b =>
                 {
                     b.Property<int>("Id")
@@ -191,7 +260,8 @@ namespace Cookbook.Data.Migrations
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("ImageUrl")
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
 
                     b.Property<string>("Instructions")
                         .IsRequired()
@@ -213,7 +283,10 @@ namespace Cookbook.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Recipes");
+                    b.ToTable("Recipes", t =>
+                        {
+                            t.HasComment("Stores users' personal recipes.");
+                        });
 
                     b.HasData(
                         new
@@ -265,7 +338,10 @@ namespace Cookbook.Data.Migrations
 
                     b.HasIndex("IngredientId");
 
-                    b.ToTable("RecipesIngredients");
+                    b.ToTable("RecipesIngredients", t =>
+                        {
+                            t.HasComment("Associates recipes with ingredients and stores the quantity of each ingredient used.");
+                        });
 
                     b.HasData(
                         new
@@ -511,15 +587,15 @@ namespace Cookbook.Data.Migrations
                         {
                             Id = "4dd95024-058e-44aa-a548-8d28b38a6e41",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "e0b0d1db-8486-407e-8d0d-d34ee91266da",
+                            ConcurrencyStamp = "07e472fc-414e-41b5-bc7a-ac8311bd3d4c",
                             Email = "test@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "TEST@GMAIL.COM",
                             NormalizedUserName = "TEST@GMAIL.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEH0v2iVcCj45ycokDBky/wFA+fiumWbdazvE+WtpKR+hDV5btJE8zDsjVCnQmI+PaA==",
+                            PasswordHash = "AQAAAAIAAYagAAAAEK0kDhOdnphQFSvKSvPYdGrHr7ZCA75uuLyeG1pNwKWb3H2I8Hd5xNNagTlm3PjijQ==",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "4aae1f3e-1357-4c90-ab2b-70d0fa5cfec3",
+                            SecurityStamp = "618536a2-0e39-49aa-add1-5fdd9a337ff5",
                             TwoFactorEnabled = false,
                             UserName = "test@gmail.com"
                         });
@@ -608,6 +684,25 @@ namespace Cookbook.Data.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("Cookbook.Data.Models.PlannedMeal", b =>
+                {
+                    b.HasOne("Cookbook.Data.Models.Recipe", "Recipe")
+                        .WithMany("PlannedMeals")
+                        .HasForeignKey("RecipeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Recipe");
                 });
 
             modelBuilder.Entity("Cookbook.Data.Models.Recipe", b =>
@@ -711,6 +806,8 @@ namespace Cookbook.Data.Migrations
 
             modelBuilder.Entity("Cookbook.Data.Models.Recipe", b =>
                 {
+                    b.Navigation("PlannedMeals");
+
                     b.Navigation("RecipeIngredients");
                 });
 #pragma warning restore 612, 618

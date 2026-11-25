@@ -15,6 +15,7 @@ namespace Cookbook.Data
         public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<Recipe> Recipes { get; set; }
         public virtual DbSet<RecipeIngredient> RecipesIngredients { get; set; }
+        public virtual DbSet<PlannedMeal> PlannedMeal {  get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -34,7 +35,7 @@ namespace Cookbook.Data
                 .WithMany(r => r.Recipes)
                 .HasForeignKey(r => r.CategoryId)
                 .OnDelete(DeleteBehavior.Restrict);
-
+                        
             modelBuilder.Entity<RecipeIngredient>()
                 .HasOne(ri => ri.Ingredient)
                 .WithMany(i => i.RecipeIngredients)
@@ -46,6 +47,22 @@ namespace Cookbook.Data
                 .WithMany(r => r.RecipeIngredients)
                 .HasForeignKey(ri => ri.RecipeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PlannedMeal>()
+                .HasOne(pm => pm.Recipe)
+                .WithMany(pm => pm.PlannedMeals)
+                .HasForeignKey(pm => pm.RecipeId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PlannedMeal>()
+                .HasOne(r => r.CreatedBy)
+                .WithMany()
+                .HasForeignKey(r => r.UserId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            modelBuilder.Entity<PlannedMeal>()
+                .HasIndex(pm => new { pm.UserId, pm.PlannedDate, pm.RecipeId })
+                .IsUnique();
 
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(CookbookDbContext).Assembly);
         }

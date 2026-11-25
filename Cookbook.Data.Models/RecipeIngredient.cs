@@ -1,10 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using static Cookbook.Common.EntityValidation.IngredientEntityValidation;
 
 namespace Cookbook.Data.Models
 {
+    [Comment("Associates recipes with ingredients and stores the quantity of each ingredient used.")]
     public class RecipeIngredient
     {
         [Required]

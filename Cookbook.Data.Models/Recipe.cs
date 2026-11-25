@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using static Cookbook.Common.EntityValidation.RecipeEntityValidation;
 
 namespace Cookbook.Data.Models
 {
+    [Comment("Stores users' personal recipes.")]
     public class Recipe
     {
         [Key]
@@ -21,6 +23,7 @@ namespace Cookbook.Data.Models
         [MaxLength(InstructionsMaxLength)]
         public string Instructions { get; set; } = null!;
 
+        [MaxLength(ImageUrlMaxLength)]
         public string? ImageUrl { get; set; }
 
         [Required]
@@ -37,5 +40,7 @@ namespace Cookbook.Data.Models
         public virtual IdentityUser CreatedBy { get; set; } = null!;
 
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
+
+        public virtual ICollection<PlannedMeal> PlannedMeals { get; set; } = new List<PlannedMeal>();
     }
 }
