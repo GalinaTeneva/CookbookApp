@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Cookbook.Common\Cookbook.Common.csproj" />
+    <ProjectReference Include="..\Cookbook.Data.Common\Cookbook.Data.Common.csproj" />
   </ItemGroup>
 
 </Project>

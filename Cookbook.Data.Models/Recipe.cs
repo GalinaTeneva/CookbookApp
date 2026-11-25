@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using static Cookbook.Common.EntityValidation.RecipeEntityValidation;
+
+using static Cookbook.Data.Common.EntityConstants.RecipeEntity;
 
 namespace Cookbook.Data.Models
 {

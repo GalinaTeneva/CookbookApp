@@ -1,5 +1,6 @@
 <Solution>
   <Folder Name="/Data/">
+    <Project Path="Cookbook.Data.Common/Cookbook.Data.Common.csproj" Id="f6235a27-1411-4f77-b3d1-eea3b16b0624" />
     <Project Path="Cookbook.Data.Models/Cookbook.Data.Models.csproj" Id="ef68e658-c360-4b06-b009-df7be332b2f7" />
     <Project Path="Cookbook.Data/Cookbook.Data.csproj" Id="6ad5f0f1-d9bf-4eb9-94be-778bf44a4039" />
   </Folder>

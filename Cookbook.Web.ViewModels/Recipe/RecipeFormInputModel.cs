@@ -1,6 +1,6 @@
 ﻿using Cookbook.Web.ViewModels.Genre;
-using static Cookbook.Common.EntityValidation.RecipeEntityValidation;
-using static Cookbook.Common.EntityValidation.IngredientEntityValidation;
+using static Cookbook.Common.InputValidationConstants.RecipeValidation;
+using static Cookbook.Common.InputValidationConstants.IngredientValidation;
 using System.ComponentModel.DataAnnotations;
 
 namespace Cookbook.Web.ViewModels.Recipe
@@ -14,6 +14,7 @@ namespace Cookbook.Web.ViewModels.Recipe
         [StringLength(DescriptionMaxLength)]
         public string? Description { get; set; }
 
+        [Required]
         [StringLength(InstructionsMaxLength, MinimumLength = InstructionsMinLength)]
         public string Instructions { get; set; } = null!;
 

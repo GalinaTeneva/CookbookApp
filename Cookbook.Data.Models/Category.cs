@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
-using static Cookbook.Common.EntityValidation.CategoryEntityValidation;
+using static Cookbook.Data.Common.EntityConstants.CategoryEntity;
 
 namespace Cookbook.Data.Models
 {

@@ -3,14 +3,12 @@
 namespace Cookbook.Services.Data.Recipe.Request
 {
     public class AddRecipeToUserRecipeListRequestData
-    {
+    {        
         public string Title { get; set; } = null!;
 
         public string? Description { get; set; }
 
         public string Instructions { get; set; } = null!;
-
-        public string IngredientsText { get; set; } = null!;
 
         public IEnumerable<RecipeIngredientRequestData> RecipeIngredients = new List<RecipeIngredientRequestData>();
 

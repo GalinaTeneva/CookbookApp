@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using static Cookbook.Common.EntityValidation.IngredientEntityValidation;
+using static Cookbook.Data.Common.EntityConstants.IngredientEntity;
 
 namespace Cookbook.Data.Models
 {

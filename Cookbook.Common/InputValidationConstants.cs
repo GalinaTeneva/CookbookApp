@@ -1,8 +1,8 @@
 ﻿namespace Cookbook.Common
 {
-    public static class EntityValidation
+    public static class InputValidationConstants
     {
-        public static class RecipeEntityValidation
+        public static class RecipeValidation
         {
             //Title
             public const int TitleMinLength = 3;
@@ -19,14 +19,14 @@
             public const int ImageUrlMaxLength = 200;
         }
 
-        public static class CategoryEntityValidation
+        public static class CategoryValidation
         {
             //Name
             public const int NameMinLength = 2;
             public const int NameMaxLength = 50;
         }
 
-        public static class IngredientEntityValidation
+        public static class IngredientValidation
         {
             //Name
             public const int NameMinLength = 2;
@@ -35,12 +35,6 @@
             //Quantity
             public const int IngredientQuantityMinLength = 2;
             public const int IngredientQuantityMaxLength = 70;
-        }
-
-        public static class PlannedMealEntityValidation
-        {
-            //PlannedDate
-            public const string PlannedDateColumnType = "date";
         }
     }
 }

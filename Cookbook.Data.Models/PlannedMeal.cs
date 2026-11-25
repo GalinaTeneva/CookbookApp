@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-using static Cookbook.Common.EntityValidation.PlannedMealEntityValidation;
+using static Cookbook.Data.Common.EntityConstants.PlannedMealEntity;
 
 namespace Cookbook.Data.Models
 {
