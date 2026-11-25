@@ -1,6 +1,7 @@
 ﻿using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Genre;
 using Cookbook.Services.Data.Ingredient.Response;
+using Cookbook.Services.Data.Recipe.Enums;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
 using Cookbook.Services.Data.RecipeIngredient;
@@ -154,8 +155,8 @@ namespace Cookbook.Controllers
                 UserId = userId
             };
 
-            bool isRecipeCreated = await recipeService.AddRecipeToUserRecipeListAsync(addRecipeToUserRecipeList);
-            if (!isRecipeCreated)
+            RecipeServiceStatusResponseModel statusResponse = await recipeService.AddRecipeToUserRecipeListAsync(addRecipeToUserRecipeList);
+            if (statusResponse.Status == RecipeServiceResponseStatus.GeneralError)
             {
                 ModelState.AddModelError(string.Empty, "There was an unexpected error with your request. Please try again!");
                 inputModel.Categories = await GetAllCategoriesViewModelAsync();
@@ -289,14 +290,21 @@ namespace Cookbook.Controllers
                 CategoryId = inputModel.CategoryId
             };
 
-            bool isRecipeEdited = await recipeService.EditRecipeAsync(accessRequestData, editingRecipeRequestData);
-            if (!isRecipeEdited)
+            RecipeServiceStatusResponseModel responseData = await recipeService.EditRecipeAsync(accessRequestData, editingRecipeRequestData);
+
+            if (responseData.Status == RecipeServiceResponseStatus.NotFound)
+                return NotFound();
+
+            if (responseData.Status == RecipeServiceResponseStatus.GeneralError)
             {
                 ModelState.AddModelError(string.Empty, "There was an unexpected error with your request. Please try again!");
                 inputModel.Categories = await GetAllCategoriesViewModelAsync();
 
                 return View(inputModel);
             }
+
+            if (responseData.Status == RecipeServiceResponseStatus.InvalidRequest)
+                return BadRequest();
 
             return RedirectToAction(nameof(Details), new { id = id });
         }
@@ -353,8 +361,15 @@ namespace Cookbook.Controllers
             if (!isUserCreator)
                 return NotFound();
 
-            bool isDeleted = await recipeService.DeleteRecipeAsync(accessRequestData);
-            if(!isDeleted)
+            RecipeServiceStatusResponseModel deleteStatus = await recipeService.DeleteRecipeAsync(accessRequestData);
+            
+            if(deleteStatus.Status == RecipeServiceResponseStatus.NotFound)
+                return NotFound();
+
+            if (deleteStatus.Status == RecipeServiceResponseStatus.InvalidRequest)
+                return BadRequest();
+
+            if (deleteStatus.Status == RecipeServiceResponseStatus.GeneralError)
             {
                 DeleteRecipeResponseData? responseData = await recipeService
                     .GetRecipeDeleteDetailsAsync(accessRequestData);

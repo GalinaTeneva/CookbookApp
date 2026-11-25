@@ -7,7 +7,8 @@ namespace Cookbook.Services.Core.Contracts
     {
         Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData);
 
-        Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData);
+        //TODO: Rename to AddRecipeWithIngredients or AddRecipe
+        Task<RecipeServiceStatusResponseModel> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData);
         
         Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(RecipeAccessRequestData accessRequestData);
 
@@ -15,10 +16,10 @@ namespace Cookbook.Services.Core.Contracts
 
         Task<GetRecipeForEditResponseData?> GetRecipeForEditAsync(RecipeAccessRequestData accessRequestData);
 
-        Task<bool> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData);
+        Task<RecipeServiceStatusResponseModel> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData);
 
         Task<DeleteRecipeResponseData?> GetRecipeDeleteDetailsAsync(RecipeAccessRequestData accessRequestData);
 
-        Task<bool> DeleteRecipeAsync(RecipeAccessRequestData accessRequestData);
+        Task<RecipeServiceStatusResponseModel> DeleteRecipeAsync(RecipeAccessRequestData accessRequestData);
     }
 }

@@ -1,12 +1,15 @@
-﻿using Cookbook.Data.Models;
+﻿using Azure;
+using Cookbook.Data.Models;
 using Cookbook.Data.Repository.Contracts;
 using Cookbook.Services.Core.Contracts;
 using Cookbook.Services.Data.Ingredient.Response;
+using Cookbook.Services.Data.Recipe.Enums;
 using Cookbook.Services.Data.Recipe.Request;
 using Cookbook.Services.Data.Recipe.Response;
 using Cookbook.Services.Data.RecipeIngredient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations;
 
 namespace Cookbook.Services.Core
 {
@@ -24,8 +27,10 @@ namespace Cookbook.Services.Core
             this.logger = logger;
         }
 
-        public async Task<bool> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData)
+        public async Task<RecipeServiceStatusResponseModel> AddRecipeToUserRecipeListAsync(AddRecipeToUserRecipeListRequestData requestData)
         {
+            RecipeServiceStatusResponseModel response = new RecipeServiceStatusResponseModel();
+
             try
             {
                 Dictionary<Ingredient, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
@@ -51,71 +56,107 @@ namespace Cookbook.Services.Core
                 await recipeRepository.AddAsync(newRecipe);
                 await recipeRepository.SaveChangesAsync();
 
-                return true;
+                response.Status = RecipeServiceResponseStatus.Success;
+            }
+            catch(ValidationException ve)
+            {
+                response.Status = RecipeServiceResponseStatus.InvalidRequest;
+                response.ErrorMessages = new List<string> { ve.Message };
             }
             catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while adding a new recipe.");
-                return false;
+                response.Status = RecipeServiceResponseStatus.GeneralError;
+                response.ErrorMessages = new List<string>() { e.Message };
             }
+
+            return response;
         }
 
-        public async Task<bool> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData)
+        public async Task<RecipeServiceStatusResponseModel> EditRecipeAsync(RecipeAccessRequestData accessRequestData, RecipeForEditRequestData requestData)
         {
-            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
-            if (!isUserCreator || requestData.Id != accessRequestData.RecipeId)
-                return false;
+            RecipeServiceStatusResponseModel response = new RecipeServiceStatusResponseModel()
+            {
+                Status = RecipeServiceResponseStatus.GeneralError,
+                ErrorMessages = new List<string>()
+            };
 
             try
             {
+                if(requestData.Id != accessRequestData.RecipeId)
+                {
+                    response.Status = RecipeServiceResponseStatus.InvalidRequest;
+                    return response;
+                }
+
+                bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+                if (!isUserCreator)
+                {
+                    response.Status = RecipeServiceResponseStatus.NotFound;
+                    return response;
+                }
+
                 Recipe? editingRecipe = await recipeRepository
                     .GetAll()
                     .Include(r => r.RecipeIngredients)
                     .ThenInclude(ri => ri.Ingredient)
                     .FirstOrDefaultAsync(r => r.Id == requestData.Id);
-                if (editingRecipe == null)
-                    return false;
-
-                Dictionary<Ingredient, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
-
-                foreach (RecipeIngredient existingIngredient in editingRecipe.RecipeIngredients.ToList())
+                
+                if(editingRecipe != null)
                 {
-                    if (requestedIngredientQuantities.TryGetValue(existingIngredient.Ingredient, out string? quantity))
-                    {
-                        existingIngredient.Quantity = quantity;
-                        requestedIngredientQuantities.Remove(existingIngredient.Ingredient);
-                    }
-                    else
-                    {
-                        editingRecipe.RecipeIngredients.Remove(existingIngredient);
-                    }
-                }
+                    Dictionary<Ingredient, string> requestedIngredientQuantities = await ResolveIngredientQuantitiesAsync(requestData.RecipeIngredients);
 
-                foreach (KeyValuePair<Ingredient, string> ingredient in requestedIngredientQuantities)
+                    foreach (RecipeIngredient existingIngredient in editingRecipe.RecipeIngredients.ToList())
+                    {
+                        if (requestedIngredientQuantities.TryGetValue(existingIngredient.Ingredient, out string? quantity))
+                        {
+                            existingIngredient.Quantity = quantity;
+                            requestedIngredientQuantities.Remove(existingIngredient.Ingredient);
+                        }
+                        else
+                        {
+                            editingRecipe.RecipeIngredients.Remove(existingIngredient);
+                        }
+                    }
+
+                    foreach (KeyValuePair<Ingredient, string> ingredient in requestedIngredientQuantities)
+                    {
+                        editingRecipe.RecipeIngredients.Add(new RecipeIngredient
+                        {
+                            RecipeId = editingRecipe.Id,
+                            Ingredient = ingredient.Key,
+                            Quantity = ingredient.Value
+                        });
+                    }
+
+                    editingRecipe.Title = requestData.Title;
+                    editingRecipe.Description = requestData.Description;
+                    editingRecipe.Instructions = requestData.Instructions;
+                    editingRecipe.ImageUrl = requestData.ImageUrl;
+                    editingRecipe.CategoryId = requestData.CategoryId;
+
+                    await recipeRepository.SaveChangesAsync();
+
+                    response.Status = RecipeServiceResponseStatus.Success;
+                }
+                else
                 {
-                    editingRecipe.RecipeIngredients.Add(new RecipeIngredient
-                    {
-                        RecipeId = editingRecipe.Id,
-                        Ingredient = ingredient.Key,
-                        Quantity = ingredient.Value
-                    });
+                    response.Status = RecipeServiceResponseStatus.NotFound;
                 }
-
-                editingRecipe.Title = requestData.Title;
-                editingRecipe.Description = requestData.Description;
-                editingRecipe.Instructions = requestData.Instructions;
-                editingRecipe.ImageUrl = requestData.ImageUrl;
-                editingRecipe.CategoryId = requestData.CategoryId;
-
-                await recipeRepository.SaveChangesAsync();
-
-                return true;
+            }
+            catch (ValidationException ve)
+            {
+                response.Status = RecipeServiceResponseStatus.InvalidRequest;
+                response.ErrorMessages = new List<string> { ve.Message };
             }
             catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while editing a recipe.");
-                return false;
+                response.Status = RecipeServiceResponseStatus.GeneralError;
+                response.ErrorMessages = new List<string>() { e.Message };
             }
+
+            return response;
         }
 
         public async Task<IEnumerable<GetAllUserRecipesResponseData>> GetAllUserRecipesAsync(GetAllUserRecipesRequestData requestData)
@@ -143,7 +184,7 @@ namespace Cookbook.Services.Core
         }
 
         public async Task<GetRecipeDetailsResponseData?> GetRecipeDetailsAsync(RecipeAccessRequestData accessRequestData)
-        {
+        {            
             bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
             if (!isUserCreator)
                 return null;
@@ -205,29 +246,43 @@ namespace Cookbook.Services.Core
             return editingRecipe;
         }
 
-        public async Task<bool> DeleteRecipeAsync(RecipeAccessRequestData accessRequestData)
+        public async Task<RecipeServiceStatusResponseModel> DeleteRecipeAsync(RecipeAccessRequestData accessRequestData)
         {
-            bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
-            if (!isUserCreator)
-                return false;
+            RecipeServiceStatusResponseModel responseData = new RecipeServiceStatusResponseModel()
+            {
+                Status = RecipeServiceResponseStatus.GeneralError,
+                ErrorMessages = new List<string>()
+            };
 
             try
             {
+                bool isUserCreator = await this.IsUserCreatorAsync(accessRequestData);
+                if (!isUserCreator)
+                {
+                    responseData.Status = RecipeServiceResponseStatus.NotFound;
+                    return responseData;
+                }
+
                 Recipe? deletingRecipe = await recipeRepository.FindByIdAsync(accessRequestData.RecipeId);
                 if (deletingRecipe == null)
-                    return false;
+                {
+                    responseData.Status = RecipeServiceResponseStatus.NotFound;
+                    return responseData;
+                }
 
                 recipeRepository.Remove(deletingRecipe);
                 await recipeRepository.SaveChangesAsync();
 
-                return true;
+                responseData.Status = RecipeServiceResponseStatus.Success;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 logger.LogError(e, "An error occurred while deleting recipe {RecipeId}.", accessRequestData.RecipeId);
-
-                return false;
+                responseData.Status = RecipeServiceResponseStatus.GeneralError;
+                responseData.ErrorMessages = new List<string> { (e.Message) };
             }
+
+            return responseData;
         }
 
         public async Task<DeleteRecipeResponseData?> GetRecipeDeleteDetailsAsync(RecipeAccessRequestData accessRequestData)
@@ -263,12 +318,12 @@ namespace Cookbook.Services.Core
             foreach (var item in requestedIngredients)
             {
                 if (string.IsNullOrWhiteSpace(item.IngredientName))
-                    throw new ArgumentException("Ingredient name can not be empty.");
+                    throw new ValidationException("Ingredient name can not be empty.");
 
                 string name = item.IngredientName.Trim();
 
                 if (!requestedQuantities.TryAdd(name, item.Quantity))
-                    throw new ArgumentException($"Ingredient \"{name}\" appears more than once.");
+                    throw new ValidationException($"Ingredient \"{name}\" appears more than once.");
             }
 
             Dictionary<Ingredient, string> resolvedIngredients = new Dictionary<Ingredient, string>();
@@ -280,7 +335,7 @@ namespace Cookbook.Services.Core
 
                 Ingredient? ingredient = await ingredientRepository.GetAll().FirstOrDefaultAsync(i => i.Name.ToLower() == name);
 
-                if(ingredient == null)
+                if (ingredient == null)
                 {
                     ingredient = new Ingredient()
                     {
@@ -289,11 +344,11 @@ namespace Cookbook.Services.Core
 
                     ingredientRepository.Add(ingredient);
 
-                }    
-                    resolvedIngredients.Add(ingredient, quantity);
+                }
+                resolvedIngredients.Add(ingredient, quantity);
             }
 
             return resolvedIngredients;
         }
-    }  
+    }
 }

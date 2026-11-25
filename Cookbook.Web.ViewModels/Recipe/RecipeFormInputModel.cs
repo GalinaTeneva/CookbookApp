@@ -43,7 +43,7 @@ namespace Cookbook.Web.ViewModels.Recipe
 
                 if (parts.Length != 2 || string.IsNullOrWhiteSpace(parts[0]) || string.IsNullOrWhiteSpace(parts[1]))
                 {
-                    yield return new ValidationResult($"Ingredient on line {i + 1} must use teh proper format.", new[] { nameof(IngredientsText) });
+                    yield return new ValidationResult($"Ingredient on line {i + 1} must use the proper format.", new[] { nameof(IngredientsText) });
 
                     continue;
                 }
