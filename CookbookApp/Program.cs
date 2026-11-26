@@ -64,6 +64,8 @@ namespace Cookbook
 
             app.UseRouting();
 
+            app.UseStatusCodePagesWithReExecute("/Home/Error", "?StatusCode={0}");
+
             app.UseAuthentication();
             app.UseAuthorization();
 

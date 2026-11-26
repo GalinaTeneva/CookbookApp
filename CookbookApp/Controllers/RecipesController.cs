@@ -141,7 +141,7 @@ namespace Cookbook.Controllers
 
             bool isCategoryValid = await categoryService.CategoryExistsAsync(inputModel.CategoryId);
             if (!isCategoryValid)
-                return BadRequest("There was an error with your request!");
+                return BadRequest();
 
             AddRecipeToUserRecipeListRequestData addRecipeToUserRecipeList = new AddRecipeToUserRecipeListRequestData()
             {
@@ -171,11 +171,13 @@ namespace Cookbook.Controllers
         public async Task<IActionResult> Details([FromRoute] int id)
         {
             if (id <= 0)
-                return BadRequest("There was an error with your request!");
+                return BadRequest();
 
             string? userId = GetUserId();
             if (string.IsNullOrWhiteSpace(userId))
                 return Unauthorized();
+
+            //TODO: Add recipeExists check - additional Recipe Service method is needed
 
             RecipeAccessRequestData accessRequestData = new RecipeAccessRequestData
             {
@@ -186,11 +188,11 @@ namespace Cookbook.Controllers
             bool isUserCreator = await recipeService.IsUserCreatorAsync(accessRequestData);
 
             if (!isUserCreator)
-                return NotFound();
+                return StatusCode(StatusCodes.Status403Forbidden);
 
             GetRecipeDetailsResponseData? responseData = await recipeService.GetRecipeDetailsAsync(accessRequestData);
             if (responseData == null)
-                return NotFound();
+                return StatusCode(StatusCodes.Status403Forbidden);
 
             DisplayRecipeViewModel displayRecipeViewModel = new DisplayRecipeViewModel
             {
@@ -218,7 +220,7 @@ namespace Cookbook.Controllers
         public async Task<IActionResult> Edit([FromRoute] int id)
         {
             if (id <= 0)
-                return BadRequest("There was an error with your request!");
+                return BadRequest();
 
             string? userId = GetUserId();
             if (string.IsNullOrWhiteSpace(userId))
@@ -277,7 +279,7 @@ namespace Cookbook.Controllers
 
             bool isCategoryValid = await categoryService.CategoryExistsAsync(inputModel.CategoryId);
             if (!isCategoryValid)
-                return BadRequest("There was an error with your request!");
+                return BadRequest();
 
             RecipeForEditRequestData editingRecipeRequestData = new RecipeForEditRequestData
             {

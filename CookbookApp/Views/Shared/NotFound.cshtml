@@ -1,0 +1,39 @@
+﻿@{
+	ViewData["Title"] = "Page Not Found";
+}
+
+<section class="bg-light rounded-3 px-4 py-5 p-md-5 my-4" aria-labelledby="error-title">
+	<div class="row justify-content-center">
+		<div class="col-lg-10 col-xl-8 text-center">
+            <p class="text-success fw-bold text-uppercase small mb-3">
+                Your everyday kitchen companion
+            </p>
+
+            <p class="display-1 fw-bold text-success mb-3">404 Not Found</p>
+
+            <h1 id="error-title" class="display-5 fw-bold mb-4">
+                The page you are looking for does not exist.
+            </h1>
+
+            <p class="lead text-muted mb-4">
+                The page you're looking for may have been moved or removed,
+                or the address might not be quite right.
+            </p>
+
+            <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                <a asp-controller="Home"
+                asp-action="Index"
+                class="btn btn-success btn-lg px-4">
+                    Back to Home
+                </a>
+
+                <a asp-controller="Recipes"
+                asp-action="Index"
+                class="btn btn-outline-success btn-lg px-4">
+                    Browse Recipes
+                </a>
+            </div>
+		</div>
+	</div>
+
+</section>
