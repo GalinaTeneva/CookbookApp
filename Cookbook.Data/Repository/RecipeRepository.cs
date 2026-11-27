@@ -9,10 +9,5 @@ namespace Cookbook.Data.Repository
             : base(dbContext)
         {
         }
-
-        public async Task<Recipe?> FindByIdAsync(int id)
-        {
-            return await DbSet.FindAsync(id);
-        }
     }
 }

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using static Cookbook.Data.Common.EntityConstants.RecipeEntity;
+using static Cookbook.Common.ErrorMessages.Recipe;
 
 namespace Cookbook.Data.Models
 {
@@ -13,29 +14,29 @@ namespace Cookbook.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(TitleMaxLength)]
+        [Required(ErrorMessage = TitleRequiredMessage)]
+        [MaxLength(TitleMaxLength, ErrorMessage = TitleMaxLengthMessage)]
         public string Title { get; set; } = null!;
 
-        [MaxLength(DescriptionMaxLength)]
+        [MaxLength(DescriptionMaxLength, ErrorMessage = DescriptionMaxLengthMessage)]
         public string? Description { get; set; }
 
-        [Required]
-        [MaxLength(InstructionsMaxLength)]
+        [Required(ErrorMessage = InstructionsRequiredMessage)]
+        [MaxLength(InstructionsMaxLength, ErrorMessage = InstructionsMaxLengthMessage)]
         public string Instructions { get; set; } = null!;
 
-        [MaxLength(ImageUrlMaxLength)]
+        [MaxLength(ImageUrlMaxLength, ErrorMessage = ImageUrlMaxLengthMessage)]
         public string? ImageUrl { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = CreatedOnRequiredMessage)]
         public DateTime CreatedOn { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = CategoryRequiredMessage)]
         [ForeignKey(nameof(Category))]
         public int CategoryId { get; set; }
         public virtual Category Category { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = UserRequiredMessage)]
         [ForeignKey(nameof(CreatedBy))]
         public string UserId { get; set; } = null!;
         public virtual IdentityUser CreatedBy { get; set; } = null!;

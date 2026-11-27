@@ -5,6 +5,8 @@ using Cookbook.Services.Data.Ingredient.Request;
 using Cookbook.Services.Data.Ingredient.Response;
 using Microsoft.EntityFrameworkCore;
 
+using static Cookbook.Common.ErrorMessages.Ingredient;
+
 namespace Cookbook.Services.Core
 {
     public class IngredientService : IIngredientService
@@ -20,7 +22,7 @@ namespace Cookbook.Services.Core
         {
             if(string.IsNullOrWhiteSpace(requestData.Name))
             {
-                throw new ArgumentException("Ingredient name cannot be empty", nameof(requestData));
+                throw new ArgumentException(NameRequiredMessage, nameof(requestData));
             }
 
             string normalizedName = requestData.Name.Trim().ToLowerInvariant();

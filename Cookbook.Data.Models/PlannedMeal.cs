@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 using static Cookbook.Data.Common.EntityConstants.PlannedMealEntity;
+using static Cookbook.Common.ErrorMessages.PlannedMeal;
 
 namespace Cookbook.Data.Models
 {
@@ -13,17 +14,17 @@ namespace Cookbook.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = RecipeRequiredMessage)]
         [ForeignKey(nameof(Recipe))]
         public int RecipeId { get; set; }
         public virtual Recipe Recipe { get; set; } = null!;
 
-        [Required]
+        [Required(ErrorMessage = UserRequiredMessage)]
         [ForeignKey(nameof(CreatedBy))]
         public string UserId { get; set; } = null!;
         public virtual IdentityUser CreatedBy { get; set; } = null!; 
 
-        [Required]
+        [Required(ErrorMessage = PlannedDateRequiredMessage)]
         [Column(TypeName = PlannedDateColumnType)]
         public DateOnly PlannedDate { get; set; }
 

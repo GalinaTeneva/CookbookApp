@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 
 using static Cookbook.Data.Common.EntityConstants.IngredientEntity;
+using static Cookbook.Common.ErrorMessages.Ingredient;
 
 namespace Cookbook.Data.Models
 {
@@ -11,8 +12,8 @@ namespace Cookbook.Data.Models
         [Key]
         public int Id { get; set; }
 
-        [Required]
-        [MaxLength(NameMaxLength)]
+        [Required(ErrorMessage = NameRequiredMessage)]
+        [MaxLength(NameMaxLength, ErrorMessage = NameMaxLengthMessage)]
         public string Name { get; set; } = null!;
 
         public virtual ICollection<RecipeIngredient> RecipeIngredients { get; set; } = new List<RecipeIngredient>();
